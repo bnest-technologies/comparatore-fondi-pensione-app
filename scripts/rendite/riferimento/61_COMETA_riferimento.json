@@ -1,0 +1,2846 @@
+{
+ "id_fondo": "61",
+ "nome_fondo": "COMETA",
+ "file_origine": "Documento-rendita COMETA.pdf",
+ "data_documento": "2023-03-24",
+ "file_pertinente": true,
+ "note_documento": "Riferimento trascritto a mano per validazione. La rendita controassicurata esiste solo al tasso tecnico 1%, come dichiarato nel documento. Nessuna tabella di correzione dell'eta. Tutte le tavole sono pagabili in rate annuali posticipate.",
+ "nuove_prestazioni_2026": {
+  "rendita_durata_definita": false,
+  "prelievi_liberamente_determinabili": false,
+  "erogazione_frazionata": false
+ },
+ "convenzioni": [
+  {
+   "id_convenzione": "61-C1",
+   "compagnia": "Assicurazioni Generali S.p.A., in raggruppamento temporaneo di imprese con INA Assitalia S.p.A.",
+   "data_scadenza": "2029-12-31",
+   "tacito_rinnovo": null,
+   "note": "Gestione separata GESAV. Tasso di rendimento minimo garantito 1% (da non confondere con il tasso tecnico).",
+   "set": [
+    {
+     "id_set": "61-C1-S1",
+     "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+     "valido_da": null,
+     "valido_a": null,
+     "condizioni_applicabilita": null,
+     "set_corrente": true,
+     "correzione_eta": [],
+     "costi": [
+      {
+       "tipo_costo": "caricamento_rata_rendita",
+       "valore_perc": 1.24,
+       "frequenza": null,
+       "note": "caricamento percentuale sulla rata di rendita"
+      },
+      {
+       "tipo_costo": "caricamento_premio",
+       "valore_perc": 0,
+       "frequenza": null,
+       "note": null
+      },
+      {
+       "tipo_costo": "costo_gestione_separata",
+       "valore_perc": 0.55,
+       "frequenza": null,
+       "note": "valore trattenuto in punti percentuali assoluti"
+      }
+     ],
+     "tabelle": [
+      {
+       "id_tabella": "61-C1-S1-T01",
+       "titolo_stampato": null,
+       "tipologia": "vitalizia_immediata",
+       "durata_certa_anni": null,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0278977
+        ],
+        [
+         51,
+         0.028671
+        ],
+        [
+         52,
+         0.0294859
+        ],
+        [
+         53,
+         0.0303458
+        ],
+        [
+         54,
+         0.0312535
+        ],
+        [
+         55,
+         0.0322129
+        ],
+        [
+         56,
+         0.0332283
+        ],
+        [
+         57,
+         0.034305
+        ],
+        [
+         58,
+         0.0354487
+        ],
+        [
+         59,
+         0.0366655
+        ],
+        [
+         60,
+         0.0379613
+        ],
+        [
+         61,
+         0.0393413
+        ],
+        [
+         62,
+         0.0408095
+        ],
+        [
+         63,
+         0.0423741
+        ],
+        [
+         64,
+         0.0440447
+        ],
+        [
+         65,
+         0.0458308
+        ],
+        [
+         66,
+         0.0477418
+        ],
+        [
+         67,
+         0.0497896
+        ],
+        [
+         68,
+         0.051988
+        ],
+        [
+         69,
+         0.0543523
+        ],
+        [
+         70,
+         0.0568971
+        ]
+       ],
+       "pagina_origine": 3,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T02",
+       "titolo_stampato": null,
+       "tipologia": "vitalizia_immediata",
+       "durata_certa_anni": null,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0251047
+        ],
+        [
+         51,
+         0.0257319
+        ],
+        [
+         52,
+         0.02639
+        ],
+        [
+         53,
+         0.0270812
+        ],
+        [
+         54,
+         0.0278078
+        ],
+        [
+         55,
+         0.028573
+        ],
+        [
+         56,
+         0.0293799
+        ],
+        [
+         57,
+         0.0302325
+        ],
+        [
+         58,
+         0.0311349
+        ],
+        [
+         59,
+         0.0320916
+        ],
+        [
+         60,
+         0.0331071
+        ],
+        [
+         61,
+         0.0341862
+        ],
+        [
+         62,
+         0.0353326
+        ],
+        [
+         63,
+         0.036551
+        ],
+        [
+         64,
+         0.0378487
+        ],
+        [
+         65,
+         0.0392343
+        ],
+        [
+         66,
+         0.0407088
+        ],
+        [
+         67,
+         0.0422912
+        ],
+        [
+         68,
+         0.0439899
+        ],
+        [
+         69,
+         0.0458165
+        ],
+        [
+         70,
+         0.0477836
+        ]
+       ],
+       "pagina_origine": 3,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T03",
+       "titolo_stampato": null,
+       "tipologia": "certa_poi_vitalizia",
+       "durata_certa_anni": 5,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0278806
+        ],
+        [
+         51,
+         0.0286512
+        ],
+        [
+         52,
+         0.0294629
+        ],
+        [
+         53,
+         0.0303188
+        ],
+        [
+         54,
+         0.031222
+        ],
+        [
+         55,
+         0.0321762
+        ],
+        [
+         56,
+         0.0331854
+        ],
+        [
+         57,
+         0.0342544
+        ],
+        [
+         58,
+         0.0353886
+        ],
+        [
+         59,
+         0.036593
+        ],
+        [
+         60,
+         0.0378733
+        ],
+        [
+         61,
+         0.039234
+        ],
+        [
+         62,
+         0.0406788
+        ],
+        [
+         63,
+         0.0422151
+        ],
+        [
+         64,
+         0.043851
+        ],
+        [
+         65,
+         0.0455944
+        ],
+        [
+         66,
+         0.0474536
+        ],
+        [
+         67,
+         0.0494376
+        ],
+        [
+         68,
+         0.0515584
+        ],
+        [
+         69,
+         0.0538274
+        ],
+        [
+         70,
+         0.0562572
+        ]
+       ],
+       "pagina_origine": 4,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T04",
+       "titolo_stampato": null,
+       "tipologia": "certa_poi_vitalizia",
+       "durata_certa_anni": 5,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0250937
+        ],
+        [
+         51,
+         0.0257195
+        ],
+        [
+         52,
+         0.0263761
+        ],
+        [
+         53,
+         0.0270656
+        ],
+        [
+         54,
+         0.0277904
+        ],
+        [
+         55,
+         0.0285535
+        ],
+        [
+         56,
+         0.0293581
+        ],
+        [
+         57,
+         0.030208
+        ],
+        [
+         58,
+         0.0311071
+        ],
+        [
+         59,
+         0.0320594
+        ],
+        [
+         60,
+         0.0330693
+        ],
+        [
+         61,
+         0.0341411
+        ],
+        [
+         62,
+         0.0352787
+        ],
+        [
+         63,
+         0.0364868
+        ],
+        [
+         64,
+         0.0377718
+        ],
+        [
+         65,
+         0.039142
+        ],
+        [
+         66,
+         0.0405991
+        ],
+        [
+         67,
+         0.0421594
+        ],
+        [
+         68,
+         0.043831
+        ],
+        [
+         69,
+         0.0456248
+        ],
+        [
+         70,
+         0.0475522
+        ]
+       ],
+       "pagina_origine": 4,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T05",
+       "titolo_stampato": null,
+       "tipologia": "certa_poi_vitalizia",
+       "durata_certa_anni": 10,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0278231
+        ],
+        [
+         51,
+         0.0285844
+        ],
+        [
+         52,
+         0.0293851
+        ],
+        [
+         53,
+         0.0302276
+        ],
+        [
+         54,
+         0.0311147
+        ],
+        [
+         55,
+         0.0320491
+        ],
+        [
+         56,
+         0.0330343
+        ],
+        [
+         57,
+         0.0340738
+        ],
+        [
+         58,
+         0.0351718
+        ],
+        [
+         59,
+         0.0363319
+        ],
+        [
+         60,
+         0.0375581
+        ],
+        [
+         61,
+         0.0388529
+        ],
+        [
+         62,
+         0.0402186
+        ],
+        [
+         63,
+         0.0416597
+        ],
+        [
+         64,
+         0.0431811
+        ],
+        [
+         65,
+         0.0447872
+        ],
+        [
+         66,
+         0.0464822
+        ],
+        [
+         67,
+         0.0482695
+        ],
+        [
+         68,
+         0.0501522
+        ],
+        [
+         69,
+         0.0521303
+        ],
+        [
+         70,
+         0.054202
+        ]
+       ],
+       "pagina_origine": 4,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T06",
+       "titolo_stampato": null,
+       "tipologia": "certa_poi_vitalizia",
+       "durata_certa_anni": 10,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0250596
+        ],
+        [
+         51,
+         0.0256815
+        ],
+        [
+         52,
+         0.0263335
+        ],
+        [
+         53,
+         0.0270178
+        ],
+        [
+         54,
+         0.0277363
+        ],
+        [
+         55,
+         0.0284921
+        ],
+        [
+         56,
+         0.0292877
+        ],
+        [
+         57,
+         0.0301265
+        ],
+        [
+         58,
+         0.0310119
+        ],
+        [
+         59,
+         0.0319477
+        ],
+        [
+         60,
+         0.0329372
+        ],
+        [
+         61,
+         0.0339845
+        ],
+        [
+         62,
+         0.0350925
+        ],
+        [
+         63,
+         0.0362651
+        ],
+        [
+         64,
+         0.0375081
+        ],
+        [
+         65,
+         0.0388279
+        ],
+        [
+         66,
+         0.0402261
+        ],
+        [
+         67,
+         0.0417146
+        ],
+        [
+         68,
+         0.0432987
+        ],
+        [
+         69,
+         0.0449841
+        ],
+        [
+         70,
+         0.0467757
+        ]
+       ],
+       "pagina_origine": 4,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T07",
+       "titolo_stampato": null,
+       "tipologia": "reversibile",
+       "durata_certa_anni": null,
+       "perc_reversibilita": 60,
+       "eta_reversionario_ipotesi": "maschio su femmina di 5 anni piu giovane; femmina su maschio di 5 anni piu vecchio",
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0234988
+        ],
+        [
+         51,
+         0.024057
+        ],
+        [
+         52,
+         0.0246414
+        ],
+        [
+         53,
+         0.0252537
+        ],
+        [
+         54,
+         0.0258959
+        ],
+        [
+         55,
+         0.02657
+        ],
+        [
+         56,
+         0.0272784
+        ],
+        [
+         57,
+         0.0280237
+        ],
+        [
+         58,
+         0.028809
+        ],
+        [
+         59,
+         0.0296374
+        ],
+        [
+         60,
+         0.030512
+        ],
+        [
+         61,
+         0.0314362
+        ],
+        [
+         62,
+         0.032413
+        ],
+        [
+         63,
+         0.0334471
+        ],
+        [
+         64,
+         0.0345433
+        ],
+        [
+         65,
+         0.0357069
+        ],
+        [
+         66,
+         0.0369434
+        ],
+        [
+         67,
+         0.0382588
+        ],
+        [
+         68,
+         0.0396597
+        ],
+        [
+         69,
+         0.0411545
+        ],
+        [
+         70,
+         0.0427515
+        ]
+       ],
+       "pagina_origine": 4,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T08",
+       "titolo_stampato": null,
+       "tipologia": "reversibile",
+       "durata_certa_anni": null,
+       "perc_reversibilita": 60,
+       "eta_reversionario_ipotesi": "maschio su femmina di 5 anni piu giovane; femmina su maschio di 5 anni piu vecchio",
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0243088
+        ],
+        [
+         51,
+         0.0249059
+        ],
+        [
+         52,
+         0.0255322
+        ],
+        [
+         53,
+         0.0261897
+        ],
+        [
+         54,
+         0.0268809
+        ],
+        [
+         55,
+         0.0276081
+        ],
+        [
+         56,
+         0.0283746
+        ],
+        [
+         57,
+         0.0291835
+        ],
+        [
+         58,
+         0.0300386
+        ],
+        [
+         59,
+         0.0309438
+        ],
+        [
+         60,
+         0.031903
+        ],
+        [
+         61,
+         0.0329212
+        ],
+        [
+         62,
+         0.0340022
+        ],
+        [
+         63,
+         0.0351507
+        ],
+        [
+         64,
+         0.0363734
+        ],
+        [
+         65,
+         0.0376778
+        ],
+        [
+         66,
+         0.0390672
+        ],
+        [
+         67,
+         0.0405563
+        ],
+        [
+         68,
+         0.0421534
+        ],
+        [
+         69,
+         0.0438697
+        ],
+        [
+         70,
+         0.0457172
+        ]
+       ],
+       "pagina_origine": 4,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T09",
+       "titolo_stampato": null,
+       "tipologia": "reversibile",
+       "durata_certa_anni": null,
+       "perc_reversibilita": 100,
+       "eta_reversionario_ipotesi": "maschio su femmina di 5 anni piu giovane; femmina su maschio di 5 anni piu vecchio",
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0212599
+        ],
+        [
+         51,
+         0.0217222
+        ],
+        [
+         52,
+         0.0222047
+        ],
+        [
+         53,
+         0.0227086
+        ],
+        [
+         54,
+         0.0232355
+        ],
+        [
+         55,
+         0.0237868
+        ],
+        [
+         56,
+         0.0243643
+        ],
+        [
+         57,
+         0.0249698
+        ],
+        [
+         58,
+         0.0256055
+        ],
+        [
+         59,
+         0.0262733
+        ],
+        [
+         60,
+         0.026976
+        ],
+        [
+         61,
+         0.027716
+        ],
+        [
+         62,
+         0.0284964
+        ],
+        [
+         63,
+         0.0293206
+        ],
+        [
+         64,
+         0.0301922
+        ],
+        [
+         65,
+         0.0311152
+        ],
+        [
+         66,
+         0.0320938
+        ],
+        [
+         67,
+         0.0331322
+        ],
+        [
+         68,
+         0.0342354
+        ],
+        [
+         69,
+         0.0354094
+        ],
+        [
+         70,
+         0.0366611
+        ]
+       ],
+       "pagina_origine": 5,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T10",
+       "titolo_stampato": null,
+       "tipologia": "reversibile",
+       "durata_certa_anni": null,
+       "perc_reversibilita": 100,
+       "eta_reversionario_ipotesi": "maschio su femmina di 5 anni piu giovane; femmina su maschio di 5 anni piu vecchio",
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0237868
+        ],
+        [
+         51,
+         0.0243643
+        ],
+        [
+         52,
+         0.0249698
+        ],
+        [
+         53,
+         0.0256055
+        ],
+        [
+         54,
+         0.0262733
+        ],
+        [
+         55,
+         0.026976
+        ],
+        [
+         56,
+         0.027716
+        ],
+        [
+         57,
+         0.0284964
+        ],
+        [
+         58,
+         0.0293206
+        ],
+        [
+         59,
+         0.0301922
+        ],
+        [
+         60,
+         0.0311152
+        ],
+        [
+         61,
+         0.0320938
+        ],
+        [
+         62,
+         0.0331322
+        ],
+        [
+         63,
+         0.0342354
+        ],
+        [
+         64,
+         0.0354094
+        ],
+        [
+         65,
+         0.0366611
+        ],
+        [
+         66,
+         0.0379951
+        ],
+        [
+         67,
+         0.039423
+        ],
+        [
+         68,
+         0.0409539
+        ],
+        [
+         69,
+         0.0425981
+        ],
+        [
+         70,
+         0.0443673
+        ]
+       ],
+       "pagina_origine": 5,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T11",
+       "titolo_stampato": null,
+       "tipologia": "ltc",
+       "durata_certa_anni": null,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "M",
+       "base_demografica": "Tavola LTC Generali (perdita di autosufficienza); RG48 per i non autosufficienti",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0274896
+        ],
+        [
+         51,
+         0.0282365
+        ],
+        [
+         52,
+         0.0290227
+        ],
+        [
+         53,
+         0.0298513
+        ],
+        [
+         54,
+         0.0307248
+        ],
+        [
+         55,
+         0.0316468
+        ],
+        [
+         56,
+         0.0326212
+        ],
+        [
+         57,
+         0.0336526
+        ],
+        [
+         58,
+         0.0347464
+        ],
+        [
+         59,
+         0.0359081
+        ],
+        [
+         60,
+         0.0371432
+        ],
+        [
+         61,
+         0.0384564
+        ],
+        [
+         62,
+         0.0398505
+        ],
+        [
+         63,
+         0.0413331
+        ],
+        [
+         64,
+         0.0429127
+        ],
+        [
+         65,
+         0.0445981
+        ],
+        [
+         66,
+         0.046397
+        ],
+        [
+         67,
+         0.0483206
+        ],
+        [
+         68,
+         0.0503804
+        ],
+        [
+         69,
+         0.0525903
+        ],
+        [
+         70,
+         0.0549623
+        ]
+       ],
+       "pagina_origine": 5,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T12",
+       "titolo_stampato": null,
+       "tipologia": "ltc",
+       "durata_certa_anni": null,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "F",
+       "base_demografica": "Tavola LTC Generali (perdita di autosufficienza); RG48 per i non autosufficienti",
+       "tasso_tecnico": 0,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0238442
+        ],
+        [
+         51,
+         0.0244069
+        ],
+        [
+         52,
+         0.0249959
+        ],
+        [
+         53,
+         0.025613
+        ],
+        [
+         54,
+         0.02626
+        ],
+        [
+         55,
+         0.0269394
+        ],
+        [
+         56,
+         0.0276542
+        ],
+        [
+         57,
+         0.0284073
+        ],
+        [
+         58,
+         0.0292025
+        ],
+        [
+         59,
+         0.030043
+        ],
+        [
+         60,
+         0.0309326
+        ],
+        [
+         61,
+         0.0318753
+        ],
+        [
+         62,
+         0.0328739
+        ],
+        [
+         63,
+         0.033932
+        ],
+        [
+         64,
+         0.0350555
+        ],
+        [
+         65,
+         0.0362516
+        ],
+        [
+         66,
+         0.0375202
+        ],
+        [
+         67,
+         0.0388783
+        ],
+        [
+         68,
+         0.0403322
+        ],
+        [
+         69,
+         0.0418913
+        ],
+        [
+         70,
+         0.0435663
+        ]
+       ],
+       "pagina_origine": 5,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T13",
+       "titolo_stampato": null,
+       "tipologia": "vitalizia_immediata",
+       "durata_certa_anni": null,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0336912
+        ],
+        [
+         51,
+         0.0344781
+        ],
+        [
+         52,
+         0.0353081
+        ],
+        [
+         53,
+         0.0361843
+        ],
+        [
+         54,
+         0.0371097
+        ],
+        [
+         55,
+         0.0380884
+        ],
+        [
+         56,
+         0.0391247
+        ],
+        [
+         57,
+         0.0402241
+        ],
+        [
+         58,
+         0.0413928
+        ],
+        [
+         59,
+         0.0426368
+        ],
+        [
+         60,
+         0.043962
+        ],
+        [
+         61,
+         0.045375
+        ],
+        [
+         62,
+         0.046877
+        ],
+        [
+         63,
+         0.048478
+        ],
+        [
+         64,
+         0.050187
+        ],
+        [
+         65,
+         0.052015
+        ],
+        [
+         66,
+         0.05397
+        ],
+        [
+         67,
+         0.056065
+        ],
+        [
+         68,
+         0.058313
+        ],
+        [
+         69,
+         0.060731
+        ],
+        [
+         70,
+         0.063333
+        ]
+       ],
+       "pagina_origine": 6,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T14",
+       "titolo_stampato": null,
+       "tipologia": "vitalizia_immediata",
+       "durata_certa_anni": null,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0308071
+        ],
+        [
+         51,
+         0.0314403
+        ],
+        [
+         52,
+         0.0321051
+        ],
+        [
+         53,
+         0.0328038
+        ],
+        [
+         54,
+         0.0335387
+        ],
+        [
+         55,
+         0.034313
+        ],
+        [
+         56,
+         0.0351302
+        ],
+        [
+         57,
+         0.0359944
+        ],
+        [
+         58,
+         0.0369099
+        ],
+        [
+         59,
+         0.0378812
+        ],
+        [
+         60,
+         0.038913
+        ],
+        [
+         61,
+         0.04001
+        ],
+        [
+         62,
+         0.041177
+        ],
+        [
+         63,
+         0.042416
+        ],
+        [
+         64,
+         0.043737
+        ],
+        [
+         65,
+         0.045148
+        ],
+        [
+         66,
+         0.046649
+        ],
+        [
+         67,
+         0.04826
+        ],
+        [
+         68,
+         0.049991
+        ],
+        [
+         69,
+         0.051852
+        ],
+        [
+         70,
+         0.053857
+        ]
+       ],
+       "pagina_origine": 6,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T15",
+       "titolo_stampato": null,
+       "tipologia": "certa_poi_vitalizia",
+       "durata_certa_anni": 5,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.033667
+        ],
+        [
+         51,
+         0.034451
+        ],
+        [
+         52,
+         0.035276
+        ],
+        [
+         53,
+         0.036147
+        ],
+        [
+         54,
+         0.037067
+        ],
+        [
+         55,
+         0.038039
+        ],
+        [
+         56,
+         0.039067
+        ],
+        [
+         57,
+         0.040157
+        ],
+        [
+         58,
+         0.041314
+        ],
+        [
+         59,
+         0.042543
+        ],
+        [
+         60,
+         0.043849
+        ],
+        [
+         61,
+         0.045237
+        ],
+        [
+         62,
+         0.046711
+        ],
+        [
+         63,
+         0.048277
+        ],
+        [
+         64,
+         0.049945
+        ],
+        [
+         65,
+         0.051722
+        ],
+        [
+         66,
+         0.053615
+        ],
+        [
+         67,
+         0.055635
+        ],
+        [
+         68,
+         0.057792
+        ],
+        [
+         69,
+         0.0601
+        ],
+        [
+         70,
+         0.062569
+        ]
+       ],
+       "pagina_origine": 6,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T16",
+       "titolo_stampato": null,
+       "tipologia": "certa_poi_vitalizia",
+       "durata_certa_anni": 5,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.030791
+        ],
+        [
+         51,
+         0.031423
+        ],
+        [
+         52,
+         0.032085
+        ],
+        [
+         53,
+         0.032782
+        ],
+        [
+         54,
+         0.033514
+        ],
+        [
+         55,
+         0.034286
+        ],
+        [
+         56,
+         0.0351
+        ],
+        [
+         57,
+         0.035961
+        ],
+        [
+         58,
+         0.036872
+        ],
+        [
+         59,
+         0.037838
+        ],
+        [
+         60,
+         0.038863
+        ],
+        [
+         61,
+         0.039951
+        ],
+        [
+         62,
+         0.041106
+        ],
+        [
+         63,
+         0.042333
+        ],
+        [
+         64,
+         0.043638
+        ],
+        [
+         65,
+         0.04503
+        ],
+        [
+         66,
+         0.04651
+        ],
+        [
+         67,
+         0.048095
+        ],
+        [
+         68,
+         0.049793
+        ],
+        [
+         69,
+         0.051616
+        ],
+        [
+         70,
+         0.053574
+        ]
+       ],
+       "pagina_origine": 6,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T17",
+       "titolo_stampato": null,
+       "tipologia": "certa_poi_vitalizia",
+       "durata_certa_anni": 10,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.03359
+        ],
+        [
+         51,
+         0.034362
+        ],
+        [
+         52,
+         0.035174
+        ],
+        [
+         53,
+         0.036028
+        ],
+        [
+         54,
+         0.036928
+        ],
+        [
+         55,
+         0.037876
+        ],
+        [
+         56,
+         0.038875
+        ],
+        [
+         57,
+         0.039929
+        ],
+        [
+         58,
+         0.041042
+        ],
+        [
+         59,
+         0.042218
+        ],
+        [
+         60,
+         0.04346
+        ],
+        [
+         61,
+         0.044771
+        ],
+        [
+         62,
+         0.046153
+        ],
+        [
+         63,
+         0.047609
+        ],
+        [
+         64,
+         0.049146
+        ],
+        [
+         65,
+         0.050766
+        ],
+        [
+         66,
+         0.052475
+        ],
+        [
+         67,
+         0.054275
+        ],
+        [
+         68,
+         0.056168
+        ],
+        [
+         69,
+         0.058155
+        ],
+        [
+         70,
+         0.060232
+        ]
+       ],
+       "pagina_origine": 6,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T18",
+       "titolo_stampato": null,
+       "tipologia": "certa_poi_vitalizia",
+       "durata_certa_anni": 10,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.030744
+        ],
+        [
+         51,
+         0.03137
+        ],
+        [
+         52,
+         0.032027
+        ],
+        [
+         53,
+         0.032717
+        ],
+        [
+         54,
+         0.033442
+        ],
+        [
+         55,
+         0.034204
+        ],
+        [
+         56,
+         0.035008
+        ],
+        [
+         57,
+         0.035855
+        ],
+        [
+         58,
+         0.036749
+        ],
+        [
+         59,
+         0.037695
+        ],
+        [
+         60,
+         0.038695
+        ],
+        [
+         61,
+         0.039754
+        ],
+        [
+         62,
+         0.040874
+        ],
+        [
+         63,
+         0.042059
+        ],
+        [
+         64,
+         0.043314
+        ],
+        [
+         65,
+         0.044648
+        ],
+        [
+         66,
+         0.04606
+        ],
+        [
+         67,
+         0.047563
+        ],
+        [
+         68,
+         0.049162
+        ],
+        [
+         69,
+         0.050862
+        ],
+        [
+         70,
+         0.052668
+        ]
+       ],
+       "pagina_origine": 6,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T19",
+       "titolo_stampato": null,
+       "tipologia": "reversibile",
+       "durata_certa_anni": null,
+       "perc_reversibilita": 60,
+       "eta_reversionario_ipotesi": "maschio su femmina di 5 anni piu giovane; femmina su maschio di 5 anni piu vecchio",
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.029191
+        ],
+        [
+         51,
+         0.029755
+        ],
+        [
+         52,
+         0.030347
+        ],
+        [
+         53,
+         0.030967
+        ],
+        [
+         54,
+         0.031618
+        ],
+        [
+         55,
+         0.032302
+        ],
+        [
+         56,
+         0.033021
+        ],
+        [
+         57,
+         0.033778
+        ],
+        [
+         58,
+         0.034576
+        ],
+        [
+         59,
+         0.035419
+        ],
+        [
+         60,
+         0.036309
+        ],
+        [
+         61,
+         0.03725
+        ],
+        [
+         62,
+         0.038245
+        ],
+        [
+         63,
+         0.039299
+        ],
+        [
+         64,
+         0.040417
+        ],
+        [
+         65,
+         0.041603
+        ],
+        [
+         66,
+         0.042864
+        ],
+        [
+         67,
+         0.044206
+        ],
+        [
+         68,
+         0.045635
+        ],
+        [
+         69,
+         0.04716
+        ],
+        [
+         70,
+         0.04879
+        ]
+       ],
+       "pagina_origine": 7,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T20",
+       "titolo_stampato": null,
+       "tipologia": "reversibile",
+       "durata_certa_anni": null,
+       "perc_reversibilita": 60,
+       "eta_reversionario_ipotesi": "maschio su femmina di 5 anni piu giovane; femmina su maschio di 5 anni piu vecchio",
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0299115
+        ],
+        [
+         51,
+         0.0305115
+        ],
+        [
+         52,
+         0.0311414
+        ],
+        [
+         53,
+         0.0318032
+        ],
+        [
+         54,
+         0.0324992
+        ],
+        [
+         55,
+         0.0332322
+        ],
+        [
+         56,
+         0.0340053
+        ],
+        [
+         57,
+         0.0348216
+        ],
+        [
+         58,
+         0.0356854
+        ],
+        [
+         59,
+         0.0366003
+        ],
+        [
+         60,
+         0.0375707
+        ],
+        [
+         61,
+         0.0386012
+        ],
+        [
+         62,
+         0.0396959
+        ],
+        [
+         63,
+         0.0408595
+        ],
+        [
+         64,
+         0.0420987
+        ],
+        [
+         65,
+         0.0434214
+        ],
+        [
+         66,
+         0.0448304
+        ],
+        [
+         67,
+         0.0463409
+        ],
+        [
+         68,
+         0.0479045
+        ],
+        [
+         69,
+         0.0497045
+        ],
+        [
+         70,
+         0.0515807
+        ]
+       ],
+       "pagina_origine": 7,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T21",
+       "titolo_stampato": null,
+       "tipologia": "reversibile",
+       "durata_certa_anni": null,
+       "perc_reversibilita": 100,
+       "eta_reversionario_ipotesi": "maschio su femmina di 5 anni piu giovane; femmina su maschio di 5 anni piu vecchio",
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0268
+        ],
+        [
+         51,
+         0.027262
+        ],
+        [
+         52,
+         0.027744
+        ],
+        [
+         53,
+         0.028247
+        ],
+        [
+         54,
+         0.028774
+        ],
+        [
+         55,
+         0.029326
+        ],
+        [
+         56,
+         0.029905
+        ],
+        [
+         57,
+         0.030512
+        ],
+        [
+         58,
+         0.03115
+        ],
+        [
+         59,
+         0.031821
+        ],
+        [
+         60,
+         0.032528
+        ],
+        [
+         61,
+         0.033272
+        ],
+        [
+         62,
+         0.034058
+        ],
+        [
+         63,
+         0.034888
+        ],
+        [
+         64,
+         0.035766
+        ],
+        [
+         65,
+         0.036697
+        ],
+        [
+         66,
+         0.037685
+        ],
+        [
+         67,
+         0.038734
+        ],
+        [
+         68,
+         0.039849
+        ],
+        [
+         69,
+         0.041035
+        ],
+        [
+         70,
+         0.042301
+        ]
+       ],
+       "pagina_origine": 7,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T22",
+       "titolo_stampato": null,
+       "tipologia": "reversibile",
+       "durata_certa_anni": null,
+       "perc_reversibilita": 100,
+       "eta_reversionario_ipotesi": "maschio su femmina di 5 anni piu giovane; femmina su maschio di 5 anni piu vecchio",
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.029326
+        ],
+        [
+         51,
+         0.029905
+        ],
+        [
+         52,
+         0.030512
+        ],
+        [
+         53,
+         0.03115
+        ],
+        [
+         54,
+         0.031821
+        ],
+        [
+         55,
+         0.032528
+        ],
+        [
+         56,
+         0.033272
+        ],
+        [
+         57,
+         0.034058
+        ],
+        [
+         58,
+         0.034888
+        ],
+        [
+         59,
+         0.035766
+        ],
+        [
+         60,
+         0.036697
+        ],
+        [
+         61,
+         0.037685
+        ],
+        [
+         62,
+         0.038734
+        ],
+        [
+         63,
+         0.039849
+        ],
+        [
+         64,
+         0.041035
+        ],
+        [
+         65,
+         0.042301
+        ],
+        [
+         66,
+         0.043651
+        ],
+        [
+         67,
+         0.045096
+        ],
+        [
+         68,
+         0.046647
+        ],
+        [
+         69,
+         0.048313
+        ],
+        [
+         70,
+         0.050106
+        ]
+       ],
+       "pagina_origine": 7,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T23",
+       "titolo_stampato": null,
+       "tipologia": "controassicurata",
+       "durata_certa_anni": null,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "M",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0309909
+        ],
+        [
+         51,
+         0.0314863
+        ],
+        [
+         52,
+         0.0320389
+        ],
+        [
+         53,
+         0.0326168
+        ],
+        [
+         54,
+         0.0332233
+        ],
+        [
+         55,
+         0.0337344
+        ],
+        [
+         56,
+         0.0343665
+        ],
+        [
+         57,
+         0.035032
+        ],
+        [
+         58,
+         0.0355403
+        ],
+        [
+         59,
+         0.0362258
+        ],
+        [
+         60,
+         0.0369519
+        ],
+        [
+         61,
+         0.0374247
+        ],
+        [
+         62,
+         0.0381714
+        ],
+        [
+         63,
+         0.0389769
+        ],
+        [
+         64,
+         0.0398516
+        ],
+        [
+         65,
+         0.0402287
+        ],
+        [
+         66,
+         0.041144
+        ],
+        [
+         67,
+         0.0421617
+        ],
+        [
+         68,
+         0.0424446
+        ],
+        [
+         69,
+         0.0435269
+        ],
+        [
+         70,
+         0.0447656
+        ]
+       ],
+       "pagina_origine": 7,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T24",
+       "titolo_stampato": null,
+       "tipologia": "controassicurata",
+       "durata_certa_anni": null,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "F",
+       "base_demografica": "IPS55DIFF - qx al 100% - differenziata per sesso, senza Age-shifting",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.0291965
+        ],
+        [
+         51,
+         0.0297057
+        ],
+        [
+         52,
+         0.0302151
+        ],
+        [
+         53,
+         0.0307599
+        ],
+        [
+         54,
+         0.0313308
+        ],
+        [
+         55,
+         0.0318906
+        ],
+        [
+         56,
+         0.0325006
+        ],
+        [
+         57,
+         0.0331411
+        ],
+        [
+         58,
+         0.0337508
+        ],
+        [
+         59,
+         0.0344317
+        ],
+        [
+         60,
+         0.0351483
+        ],
+        [
+         61,
+         0.0359045
+        ],
+        [
+         62,
+         0.0365616
+        ],
+        [
+         63,
+         0.037365
+        ],
+        [
+         64,
+         0.038219
+        ],
+        [
+         65,
+         0.0389113
+        ],
+        [
+         66,
+         0.0398191
+        ],
+        [
+         67,
+         0.0407887
+        ],
+        [
+         68,
+         0.0415072
+        ],
+        [
+         69,
+         0.042527
+        ],
+        [
+         70,
+         0.0436313
+        ]
+       ],
+       "pagina_origine": 7,
+       "qualita": "ok",
+       "note": ""
+      },
+      {
+       "id_tabella": "61-C1-S1-T25",
+       "titolo_stampato": null,
+       "tipologia": "ltc",
+       "durata_certa_anni": null,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "M",
+       "base_demografica": "Tavola LTC Generali (perdita di autosufficienza); RG48 per i non autosufficienti",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.03324
+        ],
+        [
+         51,
+         0.033998
+        ],
+        [
+         52,
+         0.034796
+        ],
+        [
+         53,
+         0.035637
+        ],
+        [
+         54,
+         0.036524
+        ],
+        [
+         55,
+         0.037462
+        ],
+        [
+         56,
+         0.038452
+        ],
+        [
+         57,
+         0.039501
+        ],
+        [
+         58,
+         0.040615
+        ],
+        [
+         59,
+         0.041798
+        ],
+        [
+         60,
+         0.043056
+        ],
+        [
+         61,
+         0.044394
+        ],
+        [
+         62,
+         0.045815
+        ],
+        [
+         63,
+         0.047326
+        ],
+        [
+         64,
+         0.048935
+        ],
+        [
+         65,
+         0.050652
+        ],
+        [
+         66,
+         0.052484
+        ],
+        [
+         67,
+         0.054443
+        ],
+        [
+         68,
+         0.05654
+        ],
+        [
+         69,
+         0.0525903
+        ],
+        [
+         70,
+         0.0549623
+        ]
+       ],
+       "pagina_origine": 8,
+       "qualita": "ok",
+       "note": "Errore tipografico nel documento: le righe 69 e 70 ripetono i valori della corrispondente tavola al tasso tecnico 0% e interrompono la progressione."
+      },
+      {
+       "id_tabella": "61-C1-S1-T26",
+       "titolo_stampato": null,
+       "tipologia": "ltc",
+       "durata_certa_anni": null,
+       "perc_reversibilita": null,
+       "eta_reversionario_ipotesi": null,
+       "sesso": "F",
+       "base_demografica": "Tavola LTC Generali (perdita di autosufficienza); RG48 per i non autosufficienti",
+       "tasso_tecnico": 1,
+       "variabile_riga": "eta_assicurativa",
+       "scala_originale": 1,
+       "base_frazionamento": "annuo_corretto",
+       "tipo_colonne": "frequenza",
+       "colonne": [
+        "annuale"
+       ],
+       "righe": [
+        [
+         50,
+         0.029444
+        ],
+        [
+         51,
+         0.030006
+        ],
+        [
+         52,
+         0.030594
+        ],
+        [
+         53,
+         0.031212
+        ],
+        [
+         54,
+         0.031859
+        ],
+        [
+         55,
+         0.032539
+        ],
+        [
+         56,
+         0.033255
+        ],
+        [
+         57,
+         0.03401
+        ],
+        [
+         58,
+         0.034808
+        ],
+        [
+         59,
+         0.035652
+        ],
+        [
+         60,
+         0.036546
+        ],
+        [
+         61,
+         0.037494
+        ],
+        [
+         62,
+         0.038499
+        ],
+        [
+         63,
+         0.039563
+        ],
+        [
+         64,
+         0.040694
+        ],
+        [
+         65,
+         0.041898
+        ],
+        [
+         66,
+         0.043175
+        ],
+        [
+         67,
+         0.044543
+        ],
+        [
+         68,
+         0.046008
+        ],
+        [
+         69,
+         0.0418913
+        ],
+        [
+         70,
+         0.0435663
+        ]
+       ],
+       "pagina_origine": 8,
+       "qualita": "ok",
+       "note": "Errore tipografico nel documento: le righe 69 e 70 ripetono i valori della corrispondente tavola al tasso tecnico 0% e interrompono la progressione."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "autocontrolli": {
+  "progressione_eta": "anomalia",
+  "ordine_tipologie": "ok",
+  "decrescenza_rateazioni": "non_applicabile",
+  "ordine_di_grandezza": "ok",
+  "completezza": "ok",
+  "dettaglio": "La sola anomalia e nella tavola LTC al tasso tecnico 1%, righe 69-70: errore presente nel documento originale."
+ },
+ "warnings": []
+}
