@@ -182,6 +182,55 @@ console.log('\n== matrice reversibile ==');
   check('e lo dichiara', true, r2.avvertenze.some(a => a.includes('differenza di')));
 }
 
+console.log('\n== reversibile per eta assoluta del reversionario ==');
+{
+  // come UNIPOL PREVIDENZA FUTURA (5099): colonne = eta corretta del reversionario
+  const rev = tab({
+    tipologia: 'reversibile', perc_reversibilita: 100, tipo_colonne: 'eta_reversionario',
+    scala_originale: 1000, colonne: ['60', '65', '70', '75'],
+    righe: [[65, 29.4296, 32.1281, 34.3889, 36.0010]],
+  });
+  const par = { etaPensionamento: 65, tipologia: 'reversibile' as const, percReversibilita: 100,
+                frequenza: 'annuale' as const, montante: 100000 };
+  check('reversionario 5 anni piu giovane: colonna 60',
+    29.4296, calcolaRendita(doc([rev]), { ...par, deltaEtaReversionario: -5 }).coefficientePerMille);
+  check('reversionario coetaneo: colonna 65',
+    32.1281, calcolaRendita(doc([rev]), { ...par, deltaEtaReversionario: 0 }).coefficientePerMille);
+  const r = calcolaRendita(doc([rev]), { ...par, deltaEtaReversionario: 3 });
+  check('eta non tabulata: usa la piu vicina (68 -> 70)', 34.3889, r.coefficientePerMille);
+  check('e lo dichiara', true, r.avvertenze.some(a => a.includes('eta di 70 anni')));
+}
+
+console.log('\n== colonne per generazione ==');
+{
+  // come il fondo 5003: le classi di nascita sostituiscono la correzione dell'eta
+  const gen = tab({
+    tipo_colonne: 'generazione', scala_originale: 1000,
+    colonne: ['nati sino al 1939', 'dal 1940 al 1948', 'dal 1949 al 1957', 'dal 1958 al 1966', 'dal 1967 al 1976', 'dopo il 1977'],
+    righe: [[65, 42.271, 40.69, 39.2, 37.8, 36.5, 35.3]],
+  });
+  const par = { etaPensionamento: 65, tipologia: 'vitalizia_immediata' as const, frequenza: 'annuale' as const, montante: 100000 };
+  check('nato nel 1935', 42.271, calcolaRendita(doc([gen]), { ...par, annoNascita: 1935 }).coefficientePerMille);
+  check('nato nel 1960', 37.8, calcolaRendita(doc([gen]), { ...par, annoNascita: 1960 }).coefficientePerMille);
+  check('nato nel 1980', 35.3, calcolaRendita(doc([gen]), { ...par, annoNascita: 1980 }).coefficientePerMille);
+  check("chiede l'anno di nascita", true, requisitiInput(doc([gen])).richiedeAnnoNascita);
+  try {
+    calcolaRendita(doc([gen]), par);
+    check('senza anno di nascita solleva errore', true, false);
+  } catch (e) {
+    check('senza anno di nascita solleva errore', true, e instanceof RenditaNonCalcolabile);
+  }
+}
+
+console.log('\n== divisori ==');
+{
+  // come FONCHIM (1): 22,4783 euro di capitale per 1 euro di rendita annua a 65 anni
+  const div = tab({ verso_conversione: 'divisore', scala_originale: 1, colonne: ['annuale'], righe: [[65, 22.4783]] });
+  const r = calcolaRendita(doc([div]), { etaPensionamento: 65, tipologia: 'vitalizia_immediata', frequenza: 'annuale', montante: 100000 });
+  check('divide il montante invece di moltiplicarlo', 4448.74, r.renditaAnnuaLorda);
+  check('coefficiente equivalente per mille', 44.48735, r.coefficientePerMille);
+}
+
 console.log('\n== casi non calcolabili ==');
 {
   const d = doc([euroVitalizia]);

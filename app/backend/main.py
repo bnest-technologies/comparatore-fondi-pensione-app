@@ -16,7 +16,8 @@ from backend.routes import (
     admin_feedback,
     funds,
     simulator,
-    content
+    content,
+    rendite
 )
 from backend.middleware.request_id import RequestIDMiddleware
 from backend.middleware.logging import LoggingMiddleware
@@ -78,6 +79,7 @@ app.include_router(simulator.router, prefix="/api", tags=["simulator"])  # Pensi
 app.include_router(content.router, prefix="/api", tags=["content"])  # Guides & FAQ
 app.include_router(admin.router, prefix="/api", tags=["admin"])  # Admin management
 app.include_router(admin_feedback.router, prefix="/api", tags=["admin", "feedback"])  # Admin feedback
+app.include_router(rendite.router, prefix="/api", tags=["rendite"])  # Coefficienti di rendita (premium)
 
 # Legacy routes
 app.include_router(protected.router)

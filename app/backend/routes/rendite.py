@@ -28,8 +28,9 @@ logger = logging.getLogger("uvicorn.error")
 
 router = APIRouter(prefix="/rendite", tags=["rendite"])
 
-# Prodotto dalla pipeline di estrazione e validazione.
-DB_PATH = Path(__file__).resolve().parents[2] / "data" / "rendite_database.json"
+# Prodotto dalla pipeline di estrazione e validazione. Sta in app/backend/data perche
+# il Dockerfile copia solo app/backend: fuori da qui il container non lo vedrebbe.
+DB_PATH = Path(__file__).resolve().parents[1] / "data" / "rendite_database.json"
 
 _cache: Optional[Dict[str, Any]] = None
 

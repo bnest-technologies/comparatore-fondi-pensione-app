@@ -97,21 +97,41 @@ def verso_conversione(tab, righe, colonne):
     """
     Alcuni fondi pubblicano DIVISORI invece di coefficienti: la rendita si ottiene
     dividendo il montante, non moltiplicandolo. Confonderli ribalta il risultato.
-    Si riconoscono da cosa dichiarano le note e dall'ordine di grandezza.
+    Decide l'ordine di grandezza: un coefficiente vale 20-100 per mille, un divisore
+    (capitale per 1 euro di rendita) vale circa 20.000 per mille. Il testo conta solo
+    se mancano i numeri, e solo la parola "divisor": "dividendo per 1.000" e una
+    normale istruzione di calcolo e aveva fatto classificare male il fondo 5003.
     """
-    testo = " ".join(str(tab.get(k) or "") for k in ("note", "titolo", "nome", "titolo_stampato")).lower()
-    if "divis" in testo or "dividendo" in testo or "premio unico per" in testo:
-        return "divisore"
-    # un coefficiente in scala 1 vale ~0,05; un divisore vale ~20
     if righe and colonne:
-        primi = [r[1] for r in righe if isinstance(r[1], (int, float))]
+        primi = [r[1] for r in righe if len(r) > 1 and isinstance(r[1], (int, float))]
         if primi:
             mediana = sorted(primi)[len(primi) // 2]
             scala = tab.get("scala_originale") or 1
-            per_mille = mediana * 1000 / scala
-            if per_mille > 300:
-                return "divisore"
-    return "moltiplicatore"
+            return "divisore" if mediana * 1000 / scala > 300 else "moltiplicatore"
+    testo = " ".join(str(tab.get(k) or "") for k in ("note", "titolo", "nome", "titolo_stampato")).lower()
+    return "divisore" if "divisor" in testo else "moltiplicatore"
+
+
+def tipo_colonne(colonne):
+    """
+    frequenza               -> "annuale", "mensile", ...
+    generazione             -> classi di anno di nascita ("dal 1949 al 1957")
+    delta_eta_reversionario -> differenze di eta ("-5", "0", "5")
+    eta_reversionario       -> eta assolute del reversionario ("60", "65", "70")
+    """
+    if any(c in FREQ for c in colonne):
+        return "frequenza"
+    if any(re.search(r"(18|19|20)\d\d", str(c)) for c in colonne):
+        return "generazione"
+    numeri = []
+    for c in colonne:
+        try:
+            numeri.append(float(str(c).replace(",", ".")))
+        except ValueError:
+            pass
+    if numeri and min(numeri) >= 20:
+        return "eta_reversionario"
+    return "delta_eta_reversionario"
 
 
 def durata_certa(tab):
@@ -133,7 +153,6 @@ def durata_certa(tab):
 
 def normalizza_tabella(tab, idx, id_set):
     colonne, righe = estrai_celle(tab)
-    tipo_colonne = "frequenza" if any(c in FREQ for c in colonne) else "delta_eta_reversionario"
     return {
         "verso_conversione": verso_conversione(tab, righe, colonne),
         "id_tabella": tab.get("id_tabella") or tab.get("tabella_id") or f"{id_set}-T{idx:02d}",
@@ -148,7 +167,7 @@ def normalizza_tabella(tab, idx, id_set):
         "variabile_riga": tab.get("variabile_riga") or "eta_assicurativa",
         "scala_originale": tab.get("scala_originale"),
         "base_frazionamento": tab.get("base_frazionamento") or "annuo_corretto",
-        "tipo_colonne": tipo_colonne,
+        "tipo_colonne": tipo_colonne(colonne),
         "colonne": colonne,
         "righe": righe,
         "pagina_origine": primo(tab, ALIAS_PAGINA),

@@ -104,7 +104,8 @@ export function requisitiInput(dati: RenditeExtractionResult, idSet?: string): {
 
   return {
     richiedeSesso: sessi.has('M') || sessi.has('F'),
-    richiedeAnnoNascita: (set.correzione_eta ?? []).length > 0,
+    richiedeAnnoNascita: (set.correzione_eta ?? []).length > 0
+      || (set.tabelle ?? []).some(t => t.tipo_colonne === 'generazione'),
     tassiTecnici: tassi,
   };
 }
@@ -201,10 +202,56 @@ function selezionaTabella(set: SetCoefficienti, p: ParametriRendita): TabellaRen
     'Le tavole del fondo sono differenziate per sesso: indicare il sesso per ottenere la rendita');
 }
 
-/** Indice della colonna da leggere, in base a frequenza o delta reversionario. */
-function indiceColonna(t: TabellaRendita, p: ParametriRendita): { idx: number; avvertenze: string[] } {
+/** Colonna numerica piu vicina al valore cercato. */
+function colonnaPiuVicina(cols: string[], cercato: number): { idx: number; esatta: boolean; valore: number } {
+  const disponibili = cols.map(Number).filter(n => !Number.isNaN(n));
+  const vicino = disponibili.reduce((a, b) =>
+    Math.abs(b - cercato) < Math.abs(a - cercato) ? b : a, disponibili[0]);
+  return { idx: cols.indexOf(String(vicino)), esatta: vicino === cercato, valore: vicino };
+}
+
+/** La classe di generazione ("sino al 1939", "dal 1940 al 1948", "dopo il 1977") che contiene l'anno. */
+function colonnaGenerazione(cols: string[], anno: number): number {
+  return cols.findIndex(c => {
+    const anni = (c.match(/\d{4}/g) ?? []).map(Number);
+    if (!anni.length) return false;
+    if (/sino|fino|prima|entro/i.test(c)) return anno <= anni[0];
+    if (/dopo|oltre|in poi/i.test(c) && anni.length === 1) return anno >= anni[0];
+    if (anni.length === 1) return anno >= anni[0];
+    return anno >= anni[0] && anno <= anni[1];
+  });
+}
+
+/** Indice della colonna da leggere: frequenza, eta o differenza di eta del reversionario, generazione. */
+function indiceColonna(
+  t: TabellaRendita, p: ParametriRendita, etaAssicurativa: number
+): { idx: number; avvertenze: string[] } {
   const avvertenze: string[] = [];
   const cols = t.colonne ?? [];
+
+  if (t.tipo_colonne === 'eta_reversionario') {
+    const cercata = etaAssicurativa + (p.deltaEtaReversionario ?? 0);
+    const c = colonnaPiuVicina(cols, cercata);
+    if (!c.esatta) {
+      avvertenze.push(
+        `Il fondo tabula la reversibile per eta del reversionario ${cols.join(', ')}: ` +
+        `usata l'eta di ${c.valore} anni invece di ${cercata}.`);
+    }
+    return { idx: c.idx, avvertenze };
+  }
+
+  if (t.tipo_colonne === 'generazione') {
+    if (p.annoNascita == null) {
+      throw new RenditaNonCalcolabile(
+        "Il fondo distingue i coefficienti per anno di nascita: indicare l'anno di nascita");
+    }
+    const idx = colonnaGenerazione(cols, p.annoNascita);
+    if (idx < 0) {
+      throw new RenditaNonCalcolabile(
+        `Nessuna classe di generazione del fondo comprende il ${p.annoNascita}`);
+    }
+    return { idx, avvertenze };
+  }
 
   if (t.tipo_colonne === 'delta_eta_reversionario') {
     const delta = p.deltaEtaReversionario ?? 0;
@@ -286,13 +333,18 @@ export function calcolaRendita(
   const delta = correzioneEta(set, p.annoNascita, tabella.sesso);
   const etaAssicurativa = p.etaPensionamento + delta;
 
-  const { idx, avvertenze: avvCol } = indiceColonna(tabella, p);
+  const { idx, avvertenze: avvCol } = indiceColonna(tabella, p, etaAssicurativa);
   const { valore, interpolato, avvertenze: avvEta } = coefficientePerEta(tabella, idx, etaAssicurativa);
 
   if (!tabella.scala_originale) {
     throw new RenditaNonCalcolabile('Scala dei coefficienti non determinata: dato non utilizzabile');
   }
-  const perMille = valore * 1000 / tabella.scala_originale;
+  // Un divisore e il capitale necessario per ottenere 1 euro di rendita annua:
+  // il coefficiente equivalente e il suo reciproco. Trattarlo come moltiplicatore
+  // produce rendite centinaia di volte piu alte, con numeri all'apparenza plausibili.
+  const perMille = tabella.verso_conversione === 'divisore'
+    ? 1000 * tabella.scala_originale / valore
+    : valore * 1000 / tabella.scala_originale;
   const rate = RATE_PER_ANNO[p.frequenza] ?? 1;
 
   // annuo_corretto: il coefficiente esprime la rendita ANNUA gia corretta per il frazionamento.

@@ -23,8 +23,17 @@ export type Frequenza =
   | 'bimestrale'
   | 'mensile';
 
-/** Cosa rappresentano le colonne della matrice. */
-export type TipoColonne = 'frequenza' | 'delta_eta_reversionario';
+/**
+ * Cosa rappresentano le colonne della matrice.
+ * - frequenza:               una colonna per rateazione
+ * - delta_eta_reversionario: differenza eta reversionario - eta aderente ("-5", "0", "5")
+ * - eta_reversionario:       eta ASSOLUTA del reversionario ("60", "65", "70")
+ * - generazione:             classi di anno di nascita ("dal 1949 al 1957"), in luogo della correzione dell'eta
+ */
+export type TipoColonne = 'frequenza' | 'delta_eta_reversionario' | 'eta_reversionario' | 'generazione';
+
+/** Il valore si moltiplica per il montante, oppure e il capitale necessario per 1 euro di rendita. */
+export type VersoConversione = 'moltiplicatore' | 'divisore';
 
 /** Cosa rappresenta la prima cella di ogni riga. */
 export type VariabileRiga = 'eta_assicurativa' | 'anni_trascorsi';
@@ -81,6 +90,8 @@ export interface TabellaRendita {
   scala_originale: number | null;
   base_frazionamento: BaseFrazionamento;
   tipo_colonne: TipoColonne;
+  /** assente nei dati piu vecchi: vale come moltiplicatore */
+  verso_conversione?: VersoConversione;
   /** etichette come stringhe anche per i delta ("-5", "0", "5") */
   colonne: string[];
   righe: number[][];
