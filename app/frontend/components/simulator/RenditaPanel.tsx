@@ -15,6 +15,7 @@ import { useAuth } from '../../auth';
 import { useCoperturaRendite, useRenditeFondo } from '../../lib/rendite';
 import { SUBSCRIPTION_URL } from '../../constants';
 import SimulatorSlider from './SimulatorSlider';
+import { NotaReversibilita, SchedaFondo, TabellaCoefficienti } from './SchedaRendita';
 
 interface RenditaPanelProps {
   fondo: PensionFund | null;
@@ -207,6 +208,8 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
     <div className="space-y-5 sm:space-y-6" data-tour="simulator-rendita">
       {intestazione}
 
+      <SchedaFondo dati={dati} />
+
       <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 p-3 sm:p-5 md:p-6 space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
           <SimulatorSlider
@@ -326,6 +329,17 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
           </div>
         </div>
       )}
+
+      {opzione && (
+        <TabellaCoefficienti
+          dati={dati}
+          opzione={opzione}
+          frequenza={frequenzaUsata}
+          etaEvidenziata={r?.etaAssicurativa}
+        />
+      )}
+
+      {opzione?.tipologia === 'reversibile' && <NotaReversibilita dati={dati} opzione={opzione} />}
 
       {r && (
         <div className="space-y-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
