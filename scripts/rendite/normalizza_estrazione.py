@@ -153,6 +153,8 @@ def durata_certa(tab):
 
 def normalizza_tabella(tab, idx, id_set):
     colonne, righe = estrai_celle(tab)
+    # il motore cerca la rateazione per nome: 'bimestrali' diventa 'bimestrale'
+    colonne = ["bimestrale" if str(c).strip().lower() == "bimestrali" else c for c in colonne]
     return {
         "verso_conversione": verso_conversione(tab, righe, colonne),
         "id_tabella": tab.get("id_tabella") or tab.get("tabella_id") or f"{id_set}-T{idx:02d}",

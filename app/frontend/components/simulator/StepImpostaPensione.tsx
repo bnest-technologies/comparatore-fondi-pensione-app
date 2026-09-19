@@ -11,6 +11,7 @@ import {
 import AliquotaGauge from './AliquotaGauge';
 import SimulatorSlider from './SimulatorSlider';
 import StepComparisonResults from './StepComparisonResults';
+import RenditaPanel from './RenditaPanel';
 
 interface StepImpostaPensioneProps {
   montanteIniziale: number;
@@ -24,6 +25,9 @@ interface StepImpostaPensioneProps {
   isComparisonMode?: boolean;
   comparisonFunds?: PensionFund[];
   onRemoveComparisonFund?: (fundId: string) => void;
+  /** Fondo scelto in modalita singola: serve per la rendita */
+  selectedFund?: PensionFund | null;
+  isFreePlan?: boolean;
 }
 
 const StepImpostaPensione: React.FC<StepImpostaPensioneProps> = ({
@@ -37,6 +41,8 @@ const StepImpostaPensione: React.FC<StepImpostaPensioneProps> = ({
   isComparisonMode = false,
   comparisonFunds = [],
   onRemoveComparisonFund,
+  selectedFund = null,
+  isFreePlan = true,
 }) => {
   const annoCorrente = new Date().getFullYear();
   const [annoPrimaAdesione, setAnnoPrimaAdesione] = useState(2020);
@@ -191,6 +197,16 @@ const StepImpostaPensione: React.FC<StepImpostaPensioneProps> = ({
         <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-500 mt-1">
           Nota: l'imposta è calcolata sull'intero montante per semplicità. Nella realtà si applica alla quota imponibile prevista dalla normativa.
         </p>
+
+        <div className="pt-4 sm:pt-6 border-t border-slate-200 dark:border-slate-800">
+          <RenditaPanel
+            fondo={selectedFund}
+            isFreePlan={isFreePlan}
+            montanteLordo={montanteLordoConFiscale}
+            aliquotaSostitutiva={aliquotaSostitutiva}
+            orizzonteAnni={orizzonteAnni}
+          />
+        </div>
       </div>
       )}
     </div>

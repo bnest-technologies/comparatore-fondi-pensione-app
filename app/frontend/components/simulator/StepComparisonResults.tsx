@@ -13,6 +13,7 @@ import {
 import { CHART_COLORS } from '../../utils/colorMapping';
 import { formatShortFundLabel } from '../../utils/fundLabel';
 import ComparisonMontanteChart, { type ComparisonSeriesPoint } from './ComparisonMontanteChart';
+import RenditaConfronto from './RenditaConfronto';
 
 type ActiveStep = 'montante' | 'fiscale' | 'imposta';
 
@@ -366,6 +367,19 @@ const StepComparisonResults: React.FC<StepComparisonResultsProps> = ({
           );
         })}
       </div>
+
+      {/* ── Rendita a confronto (solo nel passaggio del netto) ─ */}
+      {activeStep === 'imposta' && (
+        <RenditaConfronto
+          fondi={fundResults.map((r) => ({
+            fund: r.fund,
+            color: r.color,
+            montanteLordo: r.montanteConFiscale,
+            aliquotaSostitutiva: r.aliquotaSostitutiva,
+          }))}
+          orizzonteAnni={orizzonteAnni}
+        />
+      )}
 
       {/* ── Comparison chart ────────────────────────────────── */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 p-5 sm:p-6">

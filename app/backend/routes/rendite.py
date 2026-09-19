@@ -59,6 +59,11 @@ def _is_subscriber(claims: AuthClaims) -> bool:
     elif "subscriber" in profile.roles:
         role = UserRole.SUBSCRIBER
     user_status = UserStatus(profile.status or "pending")
+    # Il frontend sblocca i contenuti premium col piano 'full-access' attivo: se un
+    # amministratore aggiorna solo il piano e non il ruolo, il cliente non deve
+    # vedere la sezione aperta e ricevere un rifiuto dal server.
+    if getattr(profile, "plan", None) == "full-access" and user_status == UserStatus.ACTIVE:
+        return True
     # in assenza di un permesso dedicato si riusa quello dei fondi completi:
     # le rendite sono contenuto premium allo stesso titolo
     return can_access_feature(role, user_status, Permission.VIEW_ALL_FUNDS)

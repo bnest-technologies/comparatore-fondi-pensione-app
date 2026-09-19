@@ -663,6 +663,8 @@ const SimulatorPage: React.FC<SimulatorPageProps> = ({ theme }) => {
             isComparisonMode={isComparisonMode}
             comparisonFunds={comparisonFunds}
             onRemoveComparisonFund={handleRemoveComparisonFund}
+            selectedFund={activeFunds[0] ?? null}
+            isFreePlan={isFreePlan}
           />
         )}
       </div>

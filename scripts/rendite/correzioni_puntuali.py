@@ -152,7 +152,11 @@ def main():
                     for t in s.get("tabelle", []) if t.get("id_tabella") == tid), None)
         if tab is None:
             print(f"  SALTATA {albo} {tid}: tabella non trovata"); continue
-        j = tab["colonne"].index(col) + 1
+        norm = lambda c: c[:-1] + "e" if c.endswith("li") else c     # 'bimestrali' = 'bimestrale'
+        nomi = [norm(c) for c in tab["colonne"]]
+        if norm(col) not in nomi:
+            print(f"  SALTATA {albo} {tid}: colonna {col} assente"); continue
+        j = nomi.index(norm(col)) + 1
         riga = next((r for r in tab["righe"] if r[0] == eta), None)
         if riga is None or riga[j] != errato:
             print(f"  SALTATA {albo} {tid} eta {eta} {col}: trovato {riga[j] if riga else None}, atteso {errato}"); continue
@@ -160,8 +164,17 @@ def main():
         tab["note"] = ((tab.get("note") or "") + f" Corretto a mano: eta {eta} {col} {errato} -> {corretto}. {fonte}").strip()
         applicate += 1
         print(f"  ok {albo} {tid} eta {eta} {col}: {errato} -> {corretto}")
+    # nomi delle rateazioni uniformi: il motore cerca la colonna per nome
+    rinominate = 0
+    for f in db["fondi"].values():
+        for c in f.get("convenzioni", []):
+            for s in c.get("set", []):
+                for t in s.get("tabelle", []):
+                    if t.get("tipo_colonne") == "frequenza" and "bimestrali" in t["colonne"]:
+                        t["colonne"] = ["bimestrale" if x == "bimestrali" else x for x in t["colonne"]]
+                        rinominate += 1
     json.dump(db, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(f"{applicate} correzioni applicate su {len(tutte)}")
+    print(f"{applicate} correzioni applicate su {len(tutte)}; colonne 'bimestrali' uniformate in {rinominate} tabelle")
 
 
 if __name__ == "__main__":
