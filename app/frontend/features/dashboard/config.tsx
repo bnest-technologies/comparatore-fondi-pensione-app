@@ -52,8 +52,8 @@ export const SECTION_COPY: SectionCopy = {
     eyebrow: 'Guida',
   },
   'tfr-faq': {
-    title: 'Domande frequenti sul TFR',
-    description: 'Risposte rapide tratte dalla guida TFR: basi, scelte azienda/fondo e tassazione.',
+    title: 'Domande frequenti su TFR e rendite',
+    description: 'Risposte rapide su TFR e rendita: basi, scelte, tipi di rendita, tassazione e come leggere i documenti dei fondi.',
     eyebrow: 'FAQ',
   },
   admin: {
@@ -86,7 +86,7 @@ export const buildNavItems = (isAdmin: boolean): NavItem[] => {
       icon: <ResourcesIcon />,
       subItems: [
         { id: 'playbook', label: 'Guida Completa', description: 'Tutto sulla previdenza' },
-        { id: 'tfr-faq', label: 'FAQ TFR', description: 'Domande frequenti' },
+        { id: 'tfr-faq', label: 'FAQ TFR e rendite', description: 'Domande frequenti' },
       ],
     },
   ];

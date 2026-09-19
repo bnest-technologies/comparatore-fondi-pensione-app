@@ -49,8 +49,8 @@ def _database() -> Dict[str, Any]:
     return _cache
 
 
-def _is_subscriber(claims: AuthClaims) -> bool:
-    profile = user_service.get_user_profile(claims.uid)
+async def _is_subscriber(claims: AuthClaims) -> bool:
+    profile = await user_service.get_user_by_id(claims.sub)
     if not profile:
         return False
     role = UserRole.FREE
@@ -128,7 +128,7 @@ async def disponibilita(albo: Optional[str] = None):
 @router.get("/{albo}")
 async def coefficienti(albo: str, claims: AuthClaims = Depends(auth_required)):
     """Le tavole di un singolo fondo. Un fondo per chiamata: mai l'intero database."""
-    if not _is_subscriber(claims):
+    if not await _is_subscriber(claims):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
@@ -151,7 +151,7 @@ async def coefficienti(albo: str, claims: AuthClaims = Depends(auth_required)):
 @router.post("/ricarica")
 async def ricarica(claims: AuthClaims = Depends(auth_required)):
     """Ricarica il database dopo un aggiornamento dei dati. Solo amministratori."""
-    profile = user_service.get_user_profile(claims.uid)
+    profile = await user_service.get_user_by_id(claims.sub)
     if not profile or "admin" not in profile.roles:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Riservato agli amministratori")
