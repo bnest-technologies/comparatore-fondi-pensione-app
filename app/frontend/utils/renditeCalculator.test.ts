@@ -231,6 +231,21 @@ console.log('\n== divisori ==');
   check('coefficiente equivalente per mille', 44.48735, r.coefficientePerMille);
 }
 
+console.log('\n== fondo con sola vitalizia LTC (caso FONCHIM) ==');
+{
+  const ltc = tab({ tipologia: 'ltc', verso_conversione: 'divisore', colonne: ['annuale'], righe: [[65, 22.4783]] });
+  const r = calcolaRendita(doc([ltc]), { etaPensionamento: 65, tipologia: 'vitalizia_immediata', frequenza: 'annuale', montante: 100000 });
+  check('usa la tavola LTC', 4448.74, r.renditaAnnuaLorda);
+  check('e lo dichiara', true, r.avvertenze.some(a => a.includes('non autosufficienza')));
+  const altra = tab({ tipologia: 'certa_poi_vitalizia', durata_certa_anni: 5, righe: [[65, 50, 49, 48, 47]] });
+  try {
+    calcolaRendita(doc([altra]), { etaPensionamento: 65, tipologia: 'vitalizia_immediata', frequenza: 'annuale', montante: 100000 });
+    check('senza vitalizia ne LTC resta un errore', true, false);
+  } catch (e) {
+    check('senza vitalizia ne LTC resta un errore', true, e instanceof RenditaNonCalcolabile);
+  }
+}
+
 console.log('\n== casi non calcolabili ==');
 {
   const d = doc([euroVitalizia]);

@@ -1,0 +1,803 @@
+[
+ {
+  "albo": "122",
+  "id_tabella": "TAB_75AS_M_25",
+  "eta": 60,
+  "colonna": "quadrimestrale",
+  "errato": 0.054494,
+  "corretto": 0.055494,
+  "gemella": "106"
+ },
+ {
+  "albo": "122",
+  "id_tabella": "TAB_75AS_F_25",
+  "eta": 63,
+  "colonna": "quadrimestrale",
+  "errato": 0.052318,
+  "corretto": 0.052319,
+  "gemella": "106"
+ },
+ {
+  "albo": "136",
+  "id_tabella": "tab_certa10_tt1_f",
+  "eta": 70,
+  "colonna": "annuale",
+  "errato": 0.052679,
+  "corretto": 0.0526679,
+  "gemella": "99"
+ },
+ {
+  "albo": "136",
+  "id_tabella": "tab_rev60_tt1_f",
+  "eta": 70,
+  "colonna": "annuale",
+  "errato": 0.0515607,
+  "corretto": 0.0515807,
+  "gemella": "99"
+ },
+ {
+  "albo": "136",
+  "id_tabella": "tab_rev100_tt1_f",
+  "eta": 51,
+  "colonna": "annuale",
+  "errato": 0.0298051,
+  "corretto": 0.0299051,
+  "gemella": "99"
+ },
+ {
+  "albo": "136",
+  "id_tabella": "tab_ltc_tt1_f",
+  "eta": 70,
+  "colonna": "annuale",
+  "errato": 0.0492884,
+  "corretto": 0.0492684,
+  "gemella": "99"
+ },
+ {
+  "albo": "170",
+  "id_tabella": "allegato_2bis_opzione_a_m",
+  "eta": 79,
+  "colonna": "mensile",
+  "errato": 76.68832,
+  "corretto": 76.88832,
+  "gemella": "88"
+ },
+ {
+  "albo": "170",
+  "id_tabella": "allegato_2bis_opzione_a_f",
+  "eta": 59,
+  "colonna": "semestrale",
+  "errato": 29.37369,
+  "corretto": 29.37389,
+  "gemella": "88"
+ },
+ {
+  "albo": "170",
+  "id_tabella": "allegato_2bis_opzione_b_m",
+  "eta": 59,
+  "colonna": "semestrale",
+  "errato": 33.1796,
+  "corretto": 33.1798,
+  "gemella": "88"
+ },
+ {
+  "albo": "170",
+  "id_tabella": "allegato_2bis_opzione_b_m",
+  "eta": 64,
+  "colonna": "semestrale",
+  "errato": 39.10862,
+  "corretto": 39.10882,
+  "gemella": "88"
+ },
+ {
+  "albo": "170",
+  "id_tabella": "allegato_2bis_opzione_b_f",
+  "eta": 63,
+  "colonna": "bimestrale",
+  "errato": 32.89556,
+  "corretto": 32.89558,
+  "gemella": "88"
+ },
+ {
+  "albo": "170",
+  "id_tabella": "allegato_2bis_opzione_c_m",
+  "eta": 65,
+  "colonna": "annuale",
+  "errato": 40.48306,
+  "corretto": 40.48906,
+  "gemella": "88"
+ },
+ {
+  "albo": "170",
+  "id_tabella": "allegato_2bis_opzione_c_m",
+  "eta": 65,
+  "colonna": "semestrale",
+  "errato": 40.10323,
+  "corretto": 40.10823,
+  "gemella": "88"
+ },
+ {
+  "albo": "170",
+  "id_tabella": "allegato_2bis_opzione_c_m",
+  "eta": 66,
+  "colonna": "annuale",
+  "errato": 41.93271,
+  "corretto": 41.95271,
+  "gemella": "88"
+ },
+ {
+  "albo": "170",
+  "id_tabella": "allegato_2bis_opzione_e_m",
+  "eta": 74,
+  "colonna": "trimestrale",
+  "errato": 42.93694,
+  "corretto": 42.93894,
+  "gemella": "88"
+ },
+ {
+  "albo": "170",
+  "id_tabella": "allegato_2bis_opzione_e_m",
+  "eta": 76,
+  "colonna": "mensile",
+  "errato": 45.46866,
+  "corretto": 45.48866,
+  "gemella": "88"
+ },
+ {
+  "albo": "127",
+  "id_tabella": "tab_opz_c_m",
+  "eta": 65,
+  "colonna": "annuale",
+  "errato": 40.48306,
+  "corretto": 40.48906,
+  "gemella": "88"
+ },
+ {
+  "albo": "127",
+  "id_tabella": "tab_opz_c_m",
+  "eta": 66,
+  "colonna": "annuale",
+  "errato": 41.93271,
+  "corretto": 41.95271,
+  "gemella": "88"
+ },
+ {
+  "albo": "127",
+  "id_tabella": "tab_opz_c_m",
+  "eta": 67,
+  "colonna": "annuale",
+  "errato": 43.46756,
+  "corretto": 43.50756,
+  "gemella": "88"
+ },
+ {
+  "albo": "148",
+  "id_tabella": "tab_vitalizia_immediata_m_1perc",
+  "eta": 50,
+  "colonna": "trimestrale",
+  "errato": 0.032657,
+  "corretto": 0.0332657,
+  "gemella": "99"
+ },
+ {
+  "albo": "100",
+  "id_tabella": "OPZ_E_F_2025",
+  "eta": 57,
+  "colonna": "mensile",
+  "errato": 25.01137,
+  "corretto": 25.01131,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav4_certa5_f_0",
+  "eta": 55,
+  "colonna": "semestrale",
+  "errato": 25.3858,
+  "corretto": 26.3858,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav10_ltc_m_0",
+  "eta": 62,
+  "colonna": "mensile",
+  "errato": 34.06684,
+  "corretto": 34.06984,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav10_ltc_f_0",
+  "eta": 62,
+  "colonna": "mensile",
+  "errato": 29.14606,
+  "corretto": 29.14806,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav5_certa10_m_0",
+  "eta": 65,
+  "colonna": "annuale",
+  "errato": 40.48306,
+  "corretto": 40.48906,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav5_certa10_m_0",
+  "eta": 65,
+  "colonna": "semestrale",
+  "errato": 40.10323,
+  "corretto": 40.10823,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav5_certa10_m_0",
+  "eta": 66,
+  "colonna": "annuale",
+  "errato": 41.93271,
+  "corretto": 41.95271,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav5_certa10_m_0",
+  "eta": 66,
+  "colonna": "semestrale",
+  "errato": 41.52981,
+  "corretto": 41.54731,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav9_controass_f_2",
+  "eta": 59,
+  "colonna": "trimestrale",
+  "errato": 26.24202,
+  "corretto": 26.24902,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav9_controass_f_2",
+  "eta": 72,
+  "colonna": "semestrale",
+  "errato": 37.20726,
+  "corretto": 37.20728,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav9_controass_f_2",
+  "eta": 75,
+  "colonna": "annuale",
+  "errato": 41.19788,
+  "corretto": 41.19768,
+  "gemella": "88"
+ },
+ {
+  "albo": "126",
+  "id_tabella": "tav9_controass_f_2",
+  "eta": 75,
+  "colonna": "trimestrale",
+  "errato": 40.55388,
+  "corretto": 40.55386,
+  "gemella": "88"
+ },
+ {
+  "albo": "139",
+  "id_tabella": "tab_opz_a_m",
+  "eta": 78,
+  "colonna": "bimestrali",
+  "errato": 72.73928,
+  "corretto": 72.73926,
+  "gemella": "143 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "139",
+  "id_tabella": "tab_opz_e_m",
+  "eta": 51,
+  "colonna": "semestrale",
+  "errato": 23.75667,
+  "corretto": 23.75867,
+  "gemella": "143 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "139",
+  "id_tabella": "tab_opz_e_m",
+  "eta": 54,
+  "colonna": "annuale",
+  "errato": 25.51084,
+  "corretto": 25.51064,
+  "gemella": "143 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "139",
+  "id_tabella": "tab_opz_e_m",
+  "eta": 62,
+  "colonna": "annuale",
+  "errato": 30.89181,
+  "corretto": 30.89161,
+  "gemella": "143 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "139",
+  "id_tabella": "tab_opz_e_m",
+  "eta": 63,
+  "colonna": "mensile",
+  "errato": 31.23506,
+  "corretto": 31.25406,
+  "gemella": "143 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "139",
+  "id_tabella": "tab_opz_e_m",
+  "eta": 76,
+  "colonna": "trimestrale",
+  "errato": 45.37943,
+  "corretto": 45.37494,
+  "gemella": "143 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "139",
+  "id_tabella": "tab_opz_e_f",
+  "eta": 70,
+  "colonna": "annuale",
+  "errato": 35.25876,
+  "corretto": 35.25676,
+  "gemella": "143 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "143",
+  "id_tabella": "opzione_a_f",
+  "eta": 69,
+  "colonna": "bimestrale",
+  "errato": 40.52089,
+  "corretto": 40.52099,
+  "gemella": "139 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "143",
+  "id_tabella": "opzione_b_m",
+  "eta": 58,
+  "colonna": "trimestrale",
+  "errato": 30.9916,
+  "corretto": 31.9916,
+  "gemella": "139 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "143",
+  "id_tabella": "opzione_b_f",
+  "eta": 57,
+  "colonna": "trimestrale",
+  "errato": 26.63867,
+  "corretto": 27.63867,
+  "gemella": "139 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "143",
+  "id_tabella": "opzione_c_m",
+  "eta": 65,
+  "colonna": "annuale",
+  "errato": 40.40118,
+  "corretto": 40.40718,
+  "gemella": "139 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "143",
+  "id_tabella": "opzione_c_m",
+  "eta": 65,
+  "colonna": "semestrale",
+  "errato": 40.02172,
+  "corretto": 40.02712,
+  "gemella": "139 e 164 (scansioni, valore confermato dall'OCR in entrambe)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_vit_imm_0_m",
+  "eta": 50,
+  "colonna": "annuale",
+  "errato": 0.028561,
+  "corretto": 0.029561,
+  "gemella": "122 (TAB_75A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_vit_imm_0_m",
+  "eta": 50,
+  "colonna": "quadrimestrale",
+  "errato": 0.028271,
+  "corretto": 0.029271,
+  "gemella": "122 (TAB_75A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_vit_imm_0_m",
+  "eta": 50,
+  "colonna": "trimestrale",
+  "errato": 0.028235,
+  "corretto": 0.029235,
+  "gemella": "122 (TAB_75A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_vit_imm_0_m",
+  "eta": 50,
+  "colonna": "bimestrale",
+  "errato": 0.0282,
+  "corretto": 0.0292,
+  "gemella": "122 (TAB_75A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_vit_imm_0_m",
+  "eta": 50,
+  "colonna": "mensile",
+  "errato": 0.028164,
+  "corretto": 0.029164,
+  "gemella": "122 (TAB_75A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_5_0_m",
+  "eta": 50,
+  "colonna": "annuale",
+  "errato": 0.028534,
+  "corretto": 0.029534,
+  "gemella": "122 (TAB_76A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_5_0_m",
+  "eta": 50,
+  "colonna": "quadrimestrale",
+  "errato": 0.028248,
+  "corretto": 0.029248,
+  "gemella": "122 (TAB_76A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_5_0_m",
+  "eta": 50,
+  "colonna": "trimestrale",
+  "errato": 0.028213,
+  "corretto": 0.029213,
+  "gemella": "122 (TAB_76A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_5_0_m",
+  "eta": 50,
+  "colonna": "bimestrale",
+  "errato": 0.028178,
+  "corretto": 0.029178,
+  "gemella": "122 (TAB_76A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_5_0_m",
+  "eta": 50,
+  "colonna": "mensile",
+  "errato": 0.028143,
+  "corretto": 0.029143,
+  "gemella": "122 (TAB_76A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_5_0_f",
+  "eta": 57,
+  "colonna": "annuale",
+  "errato": 0.031156,
+  "corretto": 0.031158,
+  "gemella": "122 (TAB_76A0_F_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_10_0_m",
+  "eta": 66,
+  "colonna": "quadrimestrale",
+  "errato": 0.049799,
+  "corretto": 0.049798,
+  "gemella": "122 (TAB_77A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 50,
+  "colonna": "trimestrale",
+  "errato": 0.020956,
+  "corretto": 0.020908,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 51,
+  "colonna": "trimestrale",
+  "errato": 0.021306,
+  "corretto": 0.021366,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 51,
+  "colonna": "bimestrale",
+  "errato": 0.021248,
+  "corretto": 0.021272,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 52,
+  "colonna": "trimestrale",
+  "errato": 0.021645,
+  "corretto": 0.021845,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 53,
+  "colonna": "trimestrale",
+  "errato": 0.022349,
+  "corretto": 0.022346,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 59,
+  "colonna": "bimestrale",
+  "errato": 0.025776,
+  "corretto": 0.025778,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 60,
+  "colonna": "mensile",
+  "errato": 0.026338,
+  "corretto": 0.026339,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 61,
+  "colonna": "semestrale",
+  "errato": 0.02868,
+  "corretto": 0.027836,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 62,
+  "colonna": "semestrale",
+  "errato": 0.028956,
+  "corretto": 0.028656,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 64,
+  "colonna": "quadrimestrale",
+  "errato": 0.030088,
+  "corretto": 0.030086,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 67,
+  "colonna": "mensile",
+  "errato": 0.032548,
+  "corretto": 0.032549,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 69,
+  "colonna": "annuale",
+  "errato": 0.038762,
+  "corretto": 0.037692,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 69,
+  "colonna": "semestrale",
+  "errato": 0.036128,
+  "corretto": 0.036126,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 69,
+  "colonna": "trimestrale",
+  "errato": 0.033878,
+  "corretto": 0.033828,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 70,
+  "colonna": "trimestrale",
+  "errato": 0.035078,
+  "corretto": 0.035076,
+  "gemella": "122 (TAB_71A0_M_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_f",
+  "eta": 57,
+  "colonna": "semestrale",
+  "errato": 0.023566,
+  "corretto": 0.023568,
+  "gemella": "122 (TAB_71A0_F_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_f",
+  "eta": 58,
+  "colonna": "semestrale",
+  "errato": 0.024148,
+  "corretto": 0.024149,
+  "gemella": "122 (TAB_71A0_F_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_f",
+  "eta": 59,
+  "colonna": "semestrale",
+  "errato": 0.024758,
+  "corretto": 0.024759,
+  "gemella": "122 (TAB_71A0_F_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_f",
+  "eta": 61,
+  "colonna": "mensile",
+  "errato": 0.024546,
+  "corretto": 0.025456,
+  "gemella": "122 (TAB_71A0_F_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_f",
+  "eta": 69,
+  "colonna": "annuale",
+  "errato": 0.034365,
+  "corretto": 0.034395,
+  "gemella": "122 (TAB_71A0_F_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_f",
+  "eta": 69,
+  "colonna": "semestrale",
+  "errato": 0.033136,
+  "corretto": 0.033138,
+  "gemella": "122 (TAB_71A0_F_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_f",
+  "eta": 69,
+  "colonna": "quadrimestrale",
+  "errato": 0.032333,
+  "corretto": 0.031333,
+  "gemella": "122 (TAB_71A0_F_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_f",
+  "eta": 70,
+  "colonna": "quadrimestrale",
+  "errato": 0.03236,
+  "corretto": 0.03238,
+  "gemella": "122 (TAB_71A0_F_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_f",
+  "eta": 70,
+  "colonna": "bimestrale",
+  "errato": 0.031868,
+  "corretto": 0.031888,
+  "gemella": "122 (TAB_71A0_F_00, scansione leggibile, cella confermata)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_vit_imm_0_m",
+  "eta": 50,
+  "colonna": "semestrale",
+  "errato": 0.028343,
+  "corretto": 0.029343,
+  "gemella": "122; visto anche sulla scansione del fondo 2 (0,029343)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_vit_imm_0_m",
+  "eta": 64,
+  "colonna": "annuale",
+  "errato": 0.047716,
+  "corretto": 0.047718,
+  "gemella": "122 (scansione piu leggibile; differenza sull'ultima cifra)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_5_0_m",
+  "eta": 50,
+  "colonna": "semestrale",
+  "errato": 0.028319,
+  "corretto": 0.029319,
+  "gemella": "122; tutta la riga 50 del fondo 2 era letta con 8 al posto di 9"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_5_0_f",
+  "eta": 50,
+  "colonna": "quadrimestrale",
+  "errato": 0.025526,
+  "corretto": 0.025525,
+  "gemella": "122 (scansione piu leggibile; ultima cifra)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_5_0_f",
+  "eta": 60,
+  "colonna": "annuale",
+  "errato": 0.034238,
+  "corretto": 0.034236,
+  "gemella": "122 (scansione piu leggibile; ultima cifra)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_certa_10_0_f",
+  "eta": 62,
+  "colonna": "trimestrale",
+  "errato": 0.036028,
+  "corretto": 0.036029,
+  "gemella": "122 (scansione piu leggibile; ultima cifra)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 50,
+  "colonna": "annuale",
+  "errato": 0.022169,
+  "corretto": 0.022189,
+  "gemella": "122 (scansione piu leggibile)"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_m",
+  "eta": 70,
+  "colonna": "annuale",
+  "errato": 0.039294,
+  "corretto": 0.039204,
+  "gemella": "122; letto a occhio sulla scansione del 122: 0,039204"
+ },
+ {
+  "albo": "2",
+  "id_tabella": "unipol_controass_0_f",
+  "eta": 50,
+  "colonna": "annuale",
+  "errato": 0.02064,
+  "corretto": 0.020646,
+  "gemella": "122 (scansione piu leggibile)"
+ }
+]

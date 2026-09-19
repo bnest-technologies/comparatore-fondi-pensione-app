@@ -329,7 +329,21 @@ export function calcolaRendita(
   const set = setCorrente(dati, p.idSet);
   if (!set) throw new RenditaNonCalcolabile('Nessun set di coefficienti disponibile per il fondo');
 
-  const tabella = selezionaTabella(set, p);
+  // Alcuni fondi (FONCHIM) offrono la vitalizia solo con la maggiorazione LTC: non esiste una
+  // vitalizia "semplice". In quel caso si usa la LTC e lo si dichiara, invece di non rispondere.
+  let tabella: TabellaRendita;
+  let avvTipologia: string[] = [];
+  try {
+    tabella = selezionaTabella(set, p);
+  } catch (e) {
+    const soloLtc = p.tipologia === 'vitalizia_immediata'
+      && !(set.tabelle ?? []).some(t => t.tipologia === 'vitalizia_immediata')
+      && (set.tabelle ?? []).some(t => t.tipologia === 'ltc');
+    if (!soloLtc) throw e;
+    tabella = selezionaTabella(set, { ...p, tipologia: 'ltc' });
+    avvTipologia = ['Il fondo non prevede una rendita vitalizia semplice: tutte le sue rendite includono la ' +
+                    'maggiorazione in caso di non autosufficienza (LTC). Il calcolo usa quella tavola.'];
+  }
   const delta = correzioneEta(set, p.annoNascita, tabella.sesso);
   const etaAssicurativa = p.etaPensionamento + delta;
 
@@ -360,7 +374,7 @@ export function calcolaRendita(
     rataLorda = renditaAnnuaLorda / rate;
   }
 
-  const avvertenze = [...avvCol, ...avvEta];
+  const avvertenze = [...avvTipologia, ...avvCol, ...avvEta];
   if (tabella.qualita === 'da_verificare') {
     avvertenze.push('Coefficienti letti da una tavola in forma di immagine: dato da verificare.');
   }

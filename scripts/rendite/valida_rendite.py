@@ -80,9 +80,9 @@ def valida_doc(d, problemi):
 
         # decrescenza sulle rateazioni
         if t.get("tipo_colonne") == "frequenza":
-            ordinate = [c for c in cols if c in FREQ_ORDER]
-            if ordinate != sorted(ordinate, key=FREQ_ORDER.index):
-                problemi.append((fid, "SOSPETTO", f"{tid}: colonne non in ordine di rateazione: {cols}"))
+            # alcuni documenti stampano le colonne da bimestrale ad annuale (fondo 26):
+            # l'ordine di stampa e legittimo, si confrontano i valori in ordine di frequenza
+            ordinate = sorted((c for c in cols if c in FREQ_ORDER), key=FREQ_ORDER.index)
             idx = [cols.index(c) for c in ordinate]
             for r in righe[:5]:
                 if len(r) != len(cols) + 1:
