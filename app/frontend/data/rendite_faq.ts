@@ -84,7 +84,7 @@ export const RENDITE_FAQ: GruppoFaqRendite[] = [
           'Certa per 5 o 10 anni e poi vitalizia: nei primi anni è pagata comunque, anche ai beneficiari se il cliente muore; poi prosegue finché il cliente è in vita.',
           'Reversibile: alla morte del cliente continua, in tutto o in parte (per esempio il 60% o il 100%), a favore di una persona scelta, di solito il coniuge.',
           'Controassicurata (con restituzione del capitale): alla morte del cliente i beneficiari ricevono il capitale residuo non ancora pagato sotto forma di rate.',
-          'Con maggiorazione LTC (long term care): la rata aumenta se il cliente perde l’autosufficienza.',
+          'Con maggiorazione LTC (long term care): la rata raddoppia se il cliente perde l’autosufficienza. In cambio la rata iniziale è più bassa.',
         ],
         chiusura: [
           'Non tutti i fondi le offrono tutte: il simulatore mostra solo quelle previste dal fondo scelto.',
