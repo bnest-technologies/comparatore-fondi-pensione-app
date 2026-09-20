@@ -90,7 +90,7 @@ def _riepilogo_fondo(fondo: Dict[str, Any]) -> Dict[str, Any]:
                     eta_min = min(eta) if eta_min is None else min(eta_min, min(eta))
                     eta_max = max(eta) if eta_max is None else max(eta_max, max(eta))
     return {
-        "disponibile": n_tabelle > 0,
+        "disponibile": n_tabelle > 0 and fondo.get("file_pertinente") is not False,
         "tipologie": sorted(tipologie),
         "tassi_tecnici": sorted(tassi),
         "distingue_sesso": "M" in sessi or "F" in sessi,

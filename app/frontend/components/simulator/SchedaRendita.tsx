@@ -26,8 +26,8 @@ const stessaOpzione = (t: TabellaRendita, o: OpzioneRendita) =>
   && t.perc_reversibilita === o.percReversibilita && t.tasso_tecnico === o.tassoTecnico;
 
 /* ── Scheda del fondo ───────────────────────────────────────────── */
-export const SchedaFondo: React.FC<{ dati: RenditeExtractionResult }> = ({ dati }) => {
-  const set = setCorrente(dati);
+export const SchedaFondo: React.FC<{ dati: RenditeExtractionResult; idSet?: string }> = ({ dati, idSet }) => {
+  const set = setCorrente(dati, idSet);
   const conv = dati.convenzioni?.find((c) => (c.set ?? []).some((s) => s === set)) ?? dati.convenzioni?.[0];
 
   const basi = useMemo(() => {
@@ -99,8 +99,9 @@ export const TabellaCoefficienti: React.FC<{
   opzione: OpzioneRendita;
   frequenza: Frequenza;
   etaEvidenziata?: number;
-}> = ({ dati, opzione, frequenza, etaEvidenziata }) => {
-  const tabelle = (setCorrente(dati)?.tabelle ?? []).filter((t) => stessaOpzione(t, opzione));
+  idSet?: string;
+}> = ({ dati, opzione, frequenza, etaEvidenziata, idSet }) => {
+  const tabelle = (setCorrente(dati, idSet)?.tabelle ?? []).filter((t) => stessaOpzione(t, opzione));
   if (!tabelle.length) return null;
 
   const perSesso = ['M', 'F', 'U']
@@ -182,9 +183,9 @@ export const TabellaCoefficienti: React.FC<{
 };
 
 /* ── Reversibile: ipotesi e nota ────────────────────────────────── */
-export const NotaReversibilita: React.FC<{ dati: RenditeExtractionResult; opzione: OpzioneRendita }> = ({ dati, opzione }) => {
+export const NotaReversibilita: React.FC<{ dati: RenditeExtractionResult; opzione: OpzioneRendita; idSet?: string }> = ({ dati, opzione, idSet }) => {
   const ipotesi = Array.from(new Set(
-    (setCorrente(dati)?.tabelle ?? [])
+    (setCorrente(dati, idSet)?.tabelle ?? [])
       .filter((t) => stessaOpzione(t, opzione) && t.eta_reversionario_ipotesi)
       .map((t) => t.eta_reversionario_ipotesi as string),
   ));

@@ -6,6 +6,7 @@ import {
   opzioniDisponibili,
   requisitiInput,
   setCorrente,
+  setDisponibili,
   RATE_PER_ANNO,
   RenditaNonCalcolabile,
   type OpzioneRendita,
@@ -40,12 +41,20 @@ const NOME_RATA: Record<Frequenza, string> = {
   trimestrale: 'trimestrale', bimestrale: 'bimestrale', mensile: 'mensile',
 };
 
+/** Come si chiama una tariffa nella tendina: le condizioni di applicazione, altrimenti il tasso tecnico. */
+function etichettaTariffa(t: { id_set: string; condizioni_applicabilita?: string | null; tabelle?: { tasso_tecnico: number | null }[] }): string {
+  const testo = (t.condizioni_applicabilita ?? '').trim();
+  if (testo) return testo.length > 110 ? `${testo.slice(0, 107)}…` : testo;
+  const tassi = Array.from(new Set((t.tabelle ?? []).map((x) => x.tasso_tecnico).filter((x): x is number => x != null)));
+  return tassi.length ? `Tasso tecnico ${tassi.map((x) => String(x).replace('.', ',')).join(' / ')}%` : t.id_set;
+}
+
 const chiaveOpzione = (o: OpzioneRendita) =>
   [o.tipologia, o.durataCertaAnni, o.percReversibilita, o.tassoTecnico].join('|');
 
 /** Rateazioni che il fondo pubblica per l'opzione scelta, dalla piu frequente alla meno. */
-function rateazioniDisponibili(dati: RenditeExtractionResult, o: OpzioneRendita): Frequenza[] {
-  const set = setCorrente(dati);
+function rateazioniDisponibili(dati: RenditeExtractionResult, o: OpzioneRendita, idSet?: string): Frequenza[] {
+  const set = setCorrente(dati, idSet);
   const trovate = new Set<Frequenza>();
   for (const t of set?.tabelle ?? []) {
     if (t.tipologia !== o.tipologia || t.durata_certa_anni !== o.durataCertaAnni
@@ -84,8 +93,23 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
   const [sesso, setSesso] = useState<Sesso>('M');
   const [etaReversionario, setEtaReversionario] = useState(64);
 
-  const opzioni = useMemo(() => (dati ? opzioniDisponibili(dati) : []), [dati]);
-  const requisiti = useMemo(() => (dati ? requisitiInput(dati) : null), [dati]);
+  // fondi con piu tariffe (per data di adesione, o per tasso tecnico scelto alla conversione)
+  const [idSet, setIdSet] = useState<string | null>(null);
+  const tariffe = useMemo(() => (dati ? setDisponibili(dati) : []), [dati]);
+  const piuTariffe = tariffe.length > 1;
+  useEffect(() => {
+    // al cambio di fondo si parte dalla tariffa in vigore; se il fondo non ne indica una, la sceglie l'utente
+    setIdSet(tariffe.length > 1 ? (tariffe.find((t) => t.set_corrente === true)?.id_set ?? null) : null);
+  }, [tariffe]);
+  const tariffaDaSceglierePronta = piuTariffe && idSet == null;
+  const idSetUsato = piuTariffe && idSet != null ? idSet : undefined;
+
+  const opzioni = useMemo(
+    () => (dati && !tariffaDaSceglierePronta ? opzioniDisponibili(dati, idSetUsato) : []),
+    [dati, idSetUsato, tariffaDaSceglierePronta]);
+  const requisiti = useMemo(
+    () => (dati && !tariffaDaSceglierePronta ? requisitiInput(dati, idSetUsato) : null),
+    [dati, idSetUsato, tariffaDaSceglierePronta]);
 
   // al cambio di fondo: vitalizia semplice se c'e, altrimenti la prima opzione
   useEffect(() => {
@@ -96,7 +120,7 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
   }, [opzioni]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const opzione = opzioni.find((o) => chiaveOpzione(o) === chiave) ?? null;
-  const rateazioni = useMemo(() => (dati && opzione ? rateazioniDisponibili(dati, opzione) : []), [dati, opzione]);
+  const rateazioni = useMemo(() => (dati && opzione ? rateazioniDisponibili(dati, opzione, idSetUsato) : []), [dati, opzione, idSetUsato]);
   const frequenzaUsata: Frequenza = rateazioni.includes(frequenza) ? frequenza : (rateazioni[0] ?? 'annuale');
 
   // l'anno di nascita si ricava da eta al pensionamento e orizzonte: non serve chiederlo
@@ -107,6 +131,7 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
     try {
       return {
         risultato: calcolaRendita(dati, {
+          idSet: idSetUsato,
           etaPensionamento,
           annoNascita,
           sesso: requisiti?.richiedeSesso ? sesso : undefined,
@@ -123,7 +148,7 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
     } catch (e) {
       return { risultato: null, errore: e instanceof RenditaNonCalcolabile ? e.motivo : 'Calcolo non riuscito' };
     }
-  }, [dati, opzione, etaPensionamento, annoNascita, requisiti, sesso, etaReversionario, frequenzaUsata, montanteLordo]);
+  }, [dati, opzione, idSetUsato, etaPensionamento, annoNascita, requisiti, sesso, etaReversionario, frequenzaUsata, montanteLordo]);
 
   const intestazione = (
     <div>
@@ -208,7 +233,7 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
     <div className="space-y-5 sm:space-y-6" data-tour="simulator-rendita">
       {intestazione}
 
-      <SchedaFondo dati={dati} />
+      <SchedaFondo dati={dati} idSet={idSetUsato} />
 
       <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 p-3 sm:p-5 md:p-6 space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
@@ -238,7 +263,28 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {piuTariffe && (
+          <label className="block space-y-1.5">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Tariffa applicabile</span>
+            <select
+              value={idSet ?? ''}
+              onChange={(e) => setIdSet(e.target.value || null)}
+              className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800"
+            >
+              {idSet == null && <option value="">Scegli la tariffa…</option>}
+              {tariffe.map((t) => (
+                <option key={t.id_set} value={t.id_set}>{etichettaTariffa(t)}</option>
+              ))}
+            </select>
+            <span className="block text-xs text-slate-400 dark:text-slate-500">
+              {tariffaDaSceglierePronta
+                ? 'Il fondo prevede più tariffe e non indica quale sia in vigore: scegli quella del cliente per vedere la rendita.'
+                : 'Il fondo applica coefficienti diversi in base alla data di adesione o al tasso tecnico scelto.'}
+            </span>
+          </label>
+        )}
+
+        <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 ${tariffaDaSceglierePronta ? 'hidden' : ''}`}>
           <label className="block space-y-1.5 sm:col-span-2">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Tipo di rendita</span>
             <select
@@ -284,7 +330,7 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
         )}
       </div>
 
-      {esito?.errore && <Riquadro tono="avviso">{esito.errore}</Riquadro>}
+      {esito?.errore && !tariffaDaSceglierePronta && <Riquadro tono="avviso">{esito.errore}</Riquadro>}
 
       {r && (
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 overflow-hidden">
@@ -336,10 +382,11 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
           opzione={opzione}
           frequenza={frequenzaUsata}
           etaEvidenziata={r?.etaAssicurativa}
+          idSet={idSetUsato}
         />
       )}
 
-      {opzione?.tipologia === 'reversibile' && <NotaReversibilita dati={dati} opzione={opzione} />}
+      {opzione?.tipologia === 'reversibile' && <NotaReversibilita dati={dati} opzione={opzione} idSet={idSetUsato} />}
 
       {r && (
         <div className="space-y-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">

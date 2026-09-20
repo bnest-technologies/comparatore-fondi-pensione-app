@@ -85,6 +85,21 @@ export function setCorrente(dati: RenditeExtractionResult, idSet?: string): SetC
   return tutti.find(s => s.set_corrente === true) ?? tutti[0];
 }
 
+/** Le tariffe che hanno davvero dei coefficienti (alcuni set sono vuoti perche il documento e illeggibile). */
+export function setDisponibili(dati: RenditeExtractionResult): SetCoefficienti[] {
+  return (dati.convenzioni ?? []).flatMap(c => c.set ?? []).filter(s => (s.tabelle ?? []).length > 0);
+}
+
+/**
+ * Fondi con piu tariffe e nessuna indicata come in vigore (CONCRETO: tasso tecnico 2,5% o 0%,
+ * scelto alla conversione). Scegliere una tariffa al posto dell'utente cambierebbe la rendita di
+ * un quarto senza dirlo: si chiede quale si applica.
+ */
+export function tariffaDaScegliere(dati: RenditeExtractionResult): boolean {
+  const s = setDisponibili(dati);
+  return s.length > 1 && !s.some(x => x.set_corrente === true);
+}
+
 /**
  * Dice quali input servono davvero per questo fondo, cosi l'interfaccia puo
  * chiedere sesso e anno di nascita solo dove cambiano il risultato.
@@ -325,6 +340,10 @@ export function calcolaRendita(
 ): RisultatoRendita {
   if (dati.file_pertinente === false) {
     throw new RenditaNonCalcolabile('Per questo fondo non sono disponibili le tavole dei coefficienti');
+  }
+  if (!p.idSet && tariffaDaScegliere(dati)) {
+    throw new RenditaNonCalcolabile(
+      'Il fondo prevede piu tariffe e non indica quale si applichi: sceglila nel pannello della rendita');
   }
   const set = setCorrente(dati, p.idSet);
   if (!set) throw new RenditaNonCalcolabile('Nessun set di coefficienti disponibile per il fondo');

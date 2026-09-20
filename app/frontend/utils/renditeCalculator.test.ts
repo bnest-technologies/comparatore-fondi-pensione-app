@@ -4,7 +4,7 @@
  */
 import {
   calcolaRendita, requisitiInput, opzioniDisponibili, correzioneEta, setCorrente,
-  RenditaNonCalcolabile,
+  setDisponibili, tariffaDaScegliere, RenditaNonCalcolabile,
 } from './renditeCalculator';
 import { RenditeExtractionResult, TabellaRendita } from '../types/rendite';
 
@@ -262,6 +262,27 @@ console.log('\n== casi non calcolabili ==');
   } catch (e) {
     check('tipologia assente solleva errore', true, e instanceof RenditaNonCalcolabile);
   }
+}
+
+console.log('\n== piu tariffe senza una in vigore (CONCRETO) ==');
+{
+  const d = doc([euroVitalizia]);
+  const primo = d.convenzioni[0].set[0];
+  primo.set_corrente = false;
+  d.convenzioni[0].set.push({ ...primo, id_set: 'S2', tabelle: [{ ...euroVitalizia, id_tabella: 'T2', tasso_tecnico: 0 }] });
+  d.convenzioni[0].set.push({ ...primo, id_set: 'S3', tabelle: [] });
+  check('un set senza tabelle non conta', 2, setDisponibili(d).length);
+  check('serve una scelta', true, tariffaDaScegliere(d));
+  try {
+    calcolaRendita(d, { etaPensionamento: 65, tipologia: 'vitalizia_immediata', frequenza: 'annuale', montante: 100000 });
+    check('senza scelta non si calcola', true, false);
+  } catch (e) {
+    check('senza scelta non si calcola', true, e instanceof RenditaNonCalcolabile);
+  }
+  const r = calcolaRendita(d, { idSet: 'S2', etaPensionamento: 65, tipologia: 'vitalizia_immediata', frequenza: 'annuale', montante: 100000, tassoTecnico: 0 });
+  check('con la scelta si calcola sulla tariffa scelta', 'S2', r.idSet);
+  primo.set_corrente = true;
+  check('con un set in vigore non serve scegliere', false, tariffaDaScegliere(d));
 }
 
 console.log(`\n${passati} test superati, ${falliti} falliti\n`);
