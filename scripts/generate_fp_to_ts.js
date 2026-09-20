@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /*
   Generates app/frontend/data/funds.ts from the canonical compartments dataset:
-  data/database_comparti_2026-06-10.csv
+  data/database_comparti_2026-09-20.csv
 */
 
 const fs = require('fs');
 const path = require('path');
 
-const DATASET_FILE = 'database_comparti_2026-06-10.csv';
+const DATASET_FILE = 'database_comparti_2026-09-20.csv';
 const CLOSED_FUNDS_FILE = 'fondi_chiusi_nuovi_aderenti.csv';
 const COLLECTIVE_AGREEMENTS_FILE = 'fondi_accordi_collettivi.csv';
 const EXPECTED_ROWS = 489;
