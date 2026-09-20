@@ -72,5 +72,6 @@ main.app.dependency_overrides[auth_required] = claims
 if __name__ == "__main__":
     import uvicorn
     tipo = "Free" if GRATUITO else "Full Access"
-    print(f"\n  Anteprima locale: utente {tipo} simulato su http://localhost:8000\n")
-    uvicorn.run(main.app, host="127.0.0.1", port=8000, log_level="warning")
+    print(f"\n  Anteprima locale: utente {tipo} simulato su http://localhost:{os.environ.get('ANTEPRIMA_PORTA', '8000')}\n")
+    porta = int(os.environ.get("ANTEPRIMA_PORTA", "8000"))
+    uvicorn.run(main.app, host="127.0.0.1", port=porta, log_level="warning")
