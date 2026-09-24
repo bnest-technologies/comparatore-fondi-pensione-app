@@ -7,6 +7,8 @@ Contenuto premium. La distinzione fra i due endpoint e voluta:
                                  Serve al simulatore per dichiarare la copertura
                                  a chi non e abbonato, senza mostrare cifre.
   /api/rendite/{albo}         -> solo abbonati: le tavole vere.
+  /api/rendite/confronto      -> solo abbonati: le tavole di UNA tipologia di rendita per
+                                 tutti i fondi, per la sezione di confronto delle rendite.
 
 I coefficienti non entrano nel bundle del frontend: sono decine di migliaia di
 valori e rallenterebbero il caricamento per tutti, anche per chi non apre mai la
@@ -125,6 +127,60 @@ async def disponibilita(albo: Optional[str] = None):
     }
 
 
+TIPOLOGIE = {"vitalizia_immediata", "certa_poi_vitalizia", "reversibile", "controassicurata", "ltc"}
+_cache_confronto: Dict[str, Dict[str, Any]] = {}
+_CAMPI_TABELLA_OMESSI = {"note", "titolo_stampato", "pagina_origine"}
+_CAMPI_FONDO_OMESSI = {"note_documento", "autocontrolli", "warnings", "file_origine"}
+
+
+def _fondo_per_tipologia(fondo: Dict[str, Any], tipologia: str) -> Dict[str, Any]:
+    """
+    Il fondo con le sole tavole della tipologia richiesta. Restano i dati della convenzione
+    e dei set (compagnia, scadenza, basi, costi, correzione dell'eta), che servono alla scheda.
+    La vitalizia dei fondi che la offrono solo con maggiorazione LTC (FONCHIM) porta con se
+    la tavola LTC: e quella che il motore di calcolo usa in quel caso.
+    """
+    convenzioni = []
+    for conv in fondo.get("convenzioni", []):
+        insiemi = []
+        for s in conv.get("set", []):
+            tabelle = [t for t in s.get("tabelle", []) if t.get("tipologia") == tipologia]
+            if not tabelle and tipologia == "vitalizia_immediata":
+                tabelle = [t for t in s.get("tabelle", []) if t.get("tipologia") == "ltc"]
+            # le note di estrazione servono a chi verifica i dati, non al confronto: via, per il peso
+            tabelle = [{k: v for k, v in t.items() if k not in _CAMPI_TABELLA_OMESSI} for t in tabelle]
+            # un set senza questa rendita resta, vuoto: dice al frontend che esiste una tariffa
+            # in vigore che non la prevede (e che le altre sono per adesioni passate)
+            insiemi.append({**s, "tabelle": tabelle})
+        convenzioni.append({**conv, "set": insiemi})
+    leggero = {k: v for k, v in fondo.items() if k not in _CAMPI_FONDO_OMESSI}
+    return {**leggero, "convenzioni": convenzioni, "riepilogo": _riepilogo_fondo(fondo)}
+
+
+@router.get("/confronto")
+async def confronto(tipologia: str = "vitalizia_immediata", claims: AuthClaims = Depends(auth_required)):
+    """Le tavole di una tipologia di rendita per tutti i fondi che la offrono. Solo abbonati."""
+    if not await _is_subscriber(claims):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": "subscription_required",
+                    "message": "Il confronto delle rendite e riservato agli abbonati."},
+        )
+    if tipologia not in TIPOLOGIE:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Tipologia sconosciuta: {tipologia}")
+    if tipologia not in _cache_confronto:
+        fondi = {}
+        for albo, fondo in _database().get("fondi", {}).items():
+            if fondo.get("file_pertinente") is False:
+                continue
+            ridotto = _fondo_per_tipologia(fondo, tipologia)
+            if any(t for c in ridotto["convenzioni"] for s in c["set"] for t in s["tabelle"]):
+                fondi[albo] = ridotto
+        _cache_confronto[tipologia] = {"tipologia": tipologia, "fondi": fondi}
+    return _cache_confronto[tipologia]
+
+
 @router.get("/{albo}")
 async def coefficienti(albo: str, claims: AuthClaims = Depends(auth_required)):
     """Le tavole di un singolo fondo. Un fondo per chiamata: mai l'intero database."""
@@ -157,5 +213,6 @@ async def ricarica(claims: AuthClaims = Depends(auth_required)):
                             detail="Riservato agli amministratori")
     global _cache
     _cache = None
+    _cache_confronto.clear()
     db = _database()
     return {"ricaricato": True, "fondi": len(db.get("fondi", {}))}

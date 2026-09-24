@@ -7,6 +7,7 @@ export type DashboardSection =
   | 'simulator'
   | 'choose-fund'
   | 'ranking'
+  | 'rendite'
   | 'playbook'
   | 'tfr-faq'
   | 'admin';

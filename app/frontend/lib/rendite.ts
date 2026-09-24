@@ -7,7 +7,8 @@
  */
 import { useEffect, useState } from 'react';
 import { api } from './api';
-import type { RenditeExtractionResult } from '../types/rendite';
+import { useAuth } from '../auth';
+import type { RenditeExtractionResult, TipologiaRendita } from '../types/rendite';
 
 export type StatoRendite = 'idle' | 'caricamento' | 'pronto' | 'assente' | 'non_abbonato' | 'errore';
 
@@ -76,4 +77,77 @@ export function useCoperturaRendite() {
     return () => { attivo = false; };
   }, []);
   return fondiCoperti;
+}
+
+/** Chi puo vedere i coefficienti: piano Full Access attivo o amministratore, come nel resto dell'app. */
+export function useAccessoRendite() {
+  const { user, token } = useAuth();
+  const abbonato = (user?.plan === 'full-access' && (user?.status ?? 'active') === 'active') || user?.isAdmin === true;
+  return { abbonato, token, autenticato: Boolean(user) };
+}
+
+export interface RiepilogoRendite {
+  disponibile: boolean;
+  tipologie: TipologiaRendita[];
+  tassi_tecnici: number[];
+  distingue_sesso: boolean;
+  eta_minima: number | null;
+  eta_massima: number | null;
+}
+
+const cacheRiepilogo = new Map<number, Promise<RiepilogoRendite | null>>();
+
+/** Cosa offre un fondo, senza valori: informazione aperta anche al piano Free. */
+export function useRiepilogoRendite(nAlbo: number | null | undefined) {
+  const [riepilogo, setRiepilogo] = useState<RiepilogoRendite | null>(null);
+  const [caricamento, setCaricamento] = useState(false);
+  useEffect(() => {
+    if (nAlbo == null) { setRiepilogo(null); return; }
+    let attivo = true;
+    let p = cacheRiepilogo.get(nAlbo);
+    if (!p) {
+      p = api.get<RiepilogoRendite>(`/api/rendite/disponibilita?albo=${nAlbo}`)
+        .then((r) => r.data)
+        .catch(() => { cacheRiepilogo.delete(nAlbo); return null; });
+      cacheRiepilogo.set(nAlbo, p);
+    }
+    setCaricamento(true);
+    p.then((r) => { if (attivo) { setRiepilogo(r); setCaricamento(false); } });
+    return () => { attivo = false; };
+  }, [nAlbo]);
+  return { riepilogo, caricamento };
+}
+
+export type FondoConfronto = RenditeExtractionResult & { riepilogo: RiepilogoRendite };
+
+const cacheConfronto = new Map<string, Promise<Record<string, FondoConfronto>>>();
+
+/** Tavole di una tipologia per tutti i fondi: alimenta la sezione Rendite. Solo abbonati. */
+export function useRenditeConfronto(tipologia: TipologiaRendita, token: string | undefined, abilitato: boolean) {
+  const [stato, setStato] = useState<StatoRendite>('idle');
+  const [fondi, setFondi] = useState<Record<string, FondoConfronto> | null>(null);
+
+  useEffect(() => {
+    if (!abilitato) { setStato('idle'); setFondi(null); return; }
+    let attivo = true;
+    let p = cacheConfronto.get(tipologia);
+    if (!p) {
+      const headers: Record<string, string> = { Accept: 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      p = api.get<{ fondi: Record<string, FondoConfronto> }>(`/api/rendite/confronto?tipologia=${tipologia}`, { headers })
+        .then((r) => r.data.fondi)
+        .catch((err) => {
+          cacheConfronto.delete(tipologia);
+          const codice = err?.response?.status;
+          throw new Error(codice === 401 || codice === 403 ? 'non_abbonato' : 'errore');
+        });
+      cacheConfronto.set(tipologia, p);
+    }
+    setStato('caricamento');
+    p.then((f) => { if (attivo) { setFondi(f); setStato('pronto'); } })
+      .catch((e: Error) => { if (attivo) { setFondi(null); setStato(e.message === 'non_abbonato' ? 'non_abbonato' : 'errore'); } });
+    return () => { attivo = false; };
+  }, [tipologia, token, abilitato]);
+
+  return { stato, fondi };
 }

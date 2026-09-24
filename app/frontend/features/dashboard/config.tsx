@@ -46,6 +46,11 @@ export const SECTION_COPY: SectionCopy = {
     description: 'Consulta le classifiche per rendimento, ISC e costi sui dati comparabili disponibili.',
     eyebrow: 'Ranking',
   },
+  rendite: {
+    title: 'Confronta le Rendite',
+    description: 'Cosa offre ogni fondo in rendita e a quali condizioni: coefficienti, tasso tecnico, basi demografiche e costi, a parità di cliente.',
+    eyebrow: 'Rendite',
+  },
   playbook: {
     title: 'Guida Previdenziale',
     description: 'Approfondisci tutto sulla previdenza complementare, TFR e fondi pensione con guide complete e sempre aggiornate.',
@@ -78,6 +83,7 @@ export const buildNavItems = (isAdmin: boolean): NavItem[] => {
         { id: 'simulator', label: 'Simulatore', description: 'Proietta scenari cliente' },
         { id: 'choose-fund', label: 'Confronta Fondi', description: 'Analizza fondi e alternative' },
         { id: 'ranking', label: 'Ranking', description: 'Classifiche per rendimento e costi' },
+        { id: 'rendite', label: 'Rendite', description: 'Confronta le condizioni di rendita' },
       ],
     },
     {

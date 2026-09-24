@@ -17,6 +17,7 @@ import { useCoperturaRendite, useRenditeFondo } from '../../lib/rendite';
 import { SUBSCRIPTION_URL } from '../../constants';
 import SimulatorSlider from './SimulatorSlider';
 import { NotaReversibilita, SchedaFondo, TabellaCoefficienti } from './SchedaRendita';
+import { etichettaTariffa } from '../../utils/renditeConfronto';
 
 interface RenditaPanelProps {
   fondo: PensionFund | null;
@@ -40,14 +41,6 @@ const NOME_RATA: Record<Frequenza, string> = {
   annuale: 'annua', semestrale: 'semestrale', quadrimestrale: 'quadrimestrale',
   trimestrale: 'trimestrale', bimestrale: 'bimestrale', mensile: 'mensile',
 };
-
-/** Come si chiama una tariffa nella tendina: le condizioni di applicazione, altrimenti il tasso tecnico. */
-function etichettaTariffa(t: { id_set: string; condizioni_applicabilita?: string | null; tabelle?: { tasso_tecnico: number | null }[] }): string {
-  const testo = (t.condizioni_applicabilita ?? '').trim();
-  if (testo) return testo.length > 110 ? `${testo.slice(0, 107)}…` : testo;
-  const tassi = Array.from(new Set((t.tabelle ?? []).map((x) => x.tasso_tecnico).filter((x): x is number => x != null)));
-  return tassi.length ? `Tasso tecnico ${tassi.map((x) => String(x).replace('.', ',')).join(' / ')}%` : t.id_set;
-}
 
 const chiaveOpzione = (o: OpzioneRendita) =>
   [o.tipologia, o.durataCertaAnni, o.percReversibilita, o.tassoTecnico].join('|');

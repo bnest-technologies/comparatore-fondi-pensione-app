@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 import os
 from backend.settings import settings
 from backend.routes import (
@@ -55,6 +56,8 @@ def log_startup_info():
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestIDMiddleware)
 app.add_middleware(LoggingMiddleware)
+# compressione delle risposte grandi (tavole delle rendite per il confronto: ~570 KB -> ~100 KB)
+app.add_middleware(GZipMiddleware, minimum_size=2048)
 allow_origin_regex = os.getenv("APP_CORS_ALLOW_ORIGIN_REGEX")
 app.add_middleware(
     CORSMiddleware,
