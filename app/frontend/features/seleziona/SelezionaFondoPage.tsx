@@ -7,6 +7,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import FilterControls from '../../components/FilterControls';
+import FundRatingBadge from '../../components/common/FundRatingBadge';
 import { CATEGORY_MAP, SUBSCRIPTION_URL } from '../../constants';
 import type { CapitalGuaranteeFilter, CollectiveAgreementFilter, FundCategory, PensionFund } from '../../types';
 import { getCapitalGuaranteeStatus } from '../../utils/fundAttributes';
@@ -157,9 +158,9 @@ const SelezionaFondoPage: React.FC<SelezionaFondoPageProps> = ({ funds, onFundCl
                       >
                         <span className="min-w-0">
                           <span className="block truncate text-sm font-medium text-slate-800 dark:text-slate-100">{c.linea}</span>
-                          <span className="block text-xs text-slate-500 dark:text-slate-400">
+                          <span className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                             {CATEGORY_MAP[c.categoria]}
-                            {c.rating.classeRating ? ` · rating ${c.rating.classeRating}` : ''}
+                            {c.rating.ratingScore != null && <FundRatingBadge fund={c} compact />}
                           </span>
                         </span>
                         <span className="shrink-0 text-xs font-semibold text-[rgb(var(--brand-primary-rgb)/1)]">
