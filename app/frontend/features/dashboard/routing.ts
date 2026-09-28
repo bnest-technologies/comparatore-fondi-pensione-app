@@ -3,6 +3,7 @@ import { DashboardSection, View } from './types';
 const SECTION_TO_PATH: Record<DashboardSection, string> = {
   home: '/home',
   simulator: '/simulator',
+  'select-fund': '/seleziona',
   'choose-fund': '/compare',
   ranking: '/ranking',
   rendite: '/rendite',
@@ -14,6 +15,7 @@ const SECTION_TO_PATH: Record<DashboardSection, string> = {
 const PATH_TO_SECTION: Record<string, DashboardSection> = {
   '/home': 'home',
   '/simulator': 'simulator',
+  '/seleziona': 'select-fund',
   '/analyze': 'choose-fund',
   '/compare': 'choose-fund',
   '/ranking': 'ranking',

@@ -100,7 +100,9 @@ export const TabellaCoefficienti: React.FC<{
   frequenza: Frequenza;
   etaEvidenziata?: number;
   idSet?: string;
-}> = ({ dati, opzione, frequenza, etaEvidenziata, idSet }) => {
+  /** aperta da subito (scheda del fondo); nel simulatore resta chiusa per non allungare la pagina */
+  aperta?: boolean;
+}> = ({ dati, opzione, frequenza, etaEvidenziata, idSet, aperta = false }) => {
   const tabelle = (setCorrente(dati, idSet)?.tabelle ?? []).filter((t) => stessaOpzione(t, opzione));
   if (!tabelle.length) return null;
 
@@ -135,7 +137,7 @@ export const TabellaCoefficienti: React.FC<{
   const troppeColonne = intestazioni.length > 8;
 
   return (
-    <details className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/60">
+    <details open={aperta} className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/60">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 sm:px-5 py-3">
         <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
           Coefficienti di trasformazione per età

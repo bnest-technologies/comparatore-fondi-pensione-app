@@ -6,7 +6,7 @@ import CostChart from './CostChart';
 import { getFundInformativeNote } from '../data/fundInformativeNotes';
 import { DATASET_METADATA } from '../config/datasetMetadata';
 import FundRatingBadge from './common/FundRatingBadge';
-import RenditeFondoBox from './rendite/RenditeFondoBox';
+import RenditeFondoBox, { RenditeCoefficientiFondo } from './rendite/RenditeFondoBox';
 
 interface FundDetailModalProps {
   fund: PensionFund | null;
@@ -15,8 +15,6 @@ interface FundDetailModalProps {
   theme: string;
   onFundSelect?: (fund: PensionFund) => void;
   isSelected?: boolean;
-  /** apre la sezione Rendite con questo fondo in evidenza */
-  onApriRendite?: (nAlbo: number) => void;
 }
 
 const ValueRow: React.FC<{ label: string; value: number | null; isPercentage?: boolean }> = ({ label, value, isPercentage = true }) => {
@@ -53,7 +51,7 @@ const normalizeExternalUrl = (url: string | null): string | null => {
   return url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
 };
 
-const FundDetailModal: React.FC<FundDetailModalProps> = ({ fund, isOpen, onClose, theme, onFundSelect, isSelected, onApriRendite }) => {
+const FundDetailModal: React.FC<FundDetailModalProps> = ({ fund, isOpen, onClose, theme, onFundSelect, isSelected }) => {
   const [isMobile, setIsMobile] = React.useState(false);
   
   React.useEffect(() => {
@@ -324,7 +322,10 @@ const FundDetailModal: React.FC<FundDetailModalProps> = ({ fund, isOpen, onClose
                         <TextValueRow label="Benchmark" value={fund.benchmark} />
                     </div>
                 </div>
-                <RenditeFondoBox fund={fund} onApriRendite={onApriRendite} />
+                <RenditeFondoBox fund={fund} />
+                <div className="sm:col-span-2">
+                  <RenditeCoefficientiFondo fund={fund} />
+                </div>
                 <div className="sm:col-span-2">
                     <div className={`grid grid-cols-1 gap-4 ${collectiveInfo ? 'lg:grid-cols-2' : ''}`}>
                       <div>

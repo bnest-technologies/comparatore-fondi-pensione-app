@@ -36,6 +36,11 @@ export const SECTION_COPY: SectionCopy = {
     description: 'Simula scenari previdenziali per il cliente usando contributi, TFR, fiscalità e rendimenti storici.',
     eyebrow: 'Simula',
   },
+  'select-fund': {
+    title: 'Seleziona Fondo',
+    description: 'Trova un fondo per tipo, classificazione COVIP o società e apri direttamente la sua scheda.',
+    eyebrow: 'Seleziona',
+  },
   'choose-fund': {
     title: 'Confronta Fondi Pensione',
     description: 'Filtra il mercato, costruisci shortlist e confronta fondi con evidenze utili alla consulenza.',
@@ -80,10 +85,12 @@ export const buildNavItems = (isAdmin: boolean): NavItem[] => {
       label: 'Strumenti',
       icon: <ToolsIcon />,
       subItems: [
-        { id: 'simulator', label: 'Simulatore', description: 'Proietta scenari cliente' },
+        // ordine voluto dal cliente: si parte dal fondo, la simulazione e l'ultimo passo
+        { id: 'select-fund', label: 'Seleziona Fondo', description: 'Apri la scheda di un fondo' },
         { id: 'choose-fund', label: 'Confronta Fondi', description: 'Analizza fondi e alternative' },
         { id: 'ranking', label: 'Ranking', description: 'Classifiche per rendimento e costi' },
         { id: 'rendite', label: 'Rendite', description: 'Confronta le condizioni di rendita' },
+        { id: 'simulator', label: 'Simulatore', description: 'Proietta scenari cliente' },
       ],
     },
     {

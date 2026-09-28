@@ -5,6 +5,7 @@ export type View = 'playbook' | 'dashboard';
 export type DashboardSection =
   | 'home'
   | 'simulator'
+  | 'select-fund'
   | 'choose-fund'
   | 'ranking'
   | 'rendite'

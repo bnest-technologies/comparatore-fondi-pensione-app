@@ -20,6 +20,8 @@ interface FilterControlsProps {
   setCollectiveAgreementFilter: (filter: CollectiveAgreementFilter) => void;
   onReset: () => void;
   totalFunds?: number;
+  /** testo sotto il titolo: cambia fra "Confronta fondi" e "Seleziona fondo" */
+  sottotitolo?: string;
 }
 
 const FilterControls: React.FC<FilterControlsProps> = ({
@@ -38,7 +40,8 @@ const FilterControls: React.FC<FilterControlsProps> = ({
   collectiveAgreementFilter,
   setCollectiveAgreementFilter,
   onReset,
-  totalFunds = 0
+  totalFunds = 0,
+  sottotitolo,
 }) => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
@@ -69,7 +72,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-200 tracking-tight">Cerca fondi</h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Filtra il database per preparare il confronto del cliente.
+            {sottotitolo ?? 'Filtra il database per preparare il confronto del cliente.'}
           </p>
         </div>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">

@@ -47,6 +47,7 @@ const GuidedFundTable = lazy(() => import('./components/guided/GuidedFundTable')
 const VisualComparison = lazy(() => import('./components/VisualComparison'));
 const RankingPage = lazy(() => import('./features/ranking/RankingPage'));
 const RenditePage = lazy(() => import('./features/rendite/RenditePage'));
+const SelezionaFondoPage = lazy(() => import('./features/seleziona/SelezionaFondoPage'));
 
 const FREE_PLAN_LIMIT = 10;
 const APP_ROUTE_PATHS = new Set([
@@ -118,8 +119,6 @@ const AppContent: React.FC = () => {
   const [collectiveAgreementFilter, setCollectiveAgreementFilter] = useState<CollectiveAgreementFilter>('all');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'ultimoAnno', direction: 'descending' });
   const [modalFund, setModalFund] = useState<PensionFund | null>(null);
-  // fondo da evidenziare aprendo la sezione Rendite dalla scheda di un fondo
-  const [alboRendite, setAlboRendite] = useState<number | null>(null);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const { user, loading: authLoading, authMode } = useAuth();
   const { selectedFundIds, toggleSelectedFund, clearSelectedFunds, setEntryMode, setSimulationFundIds } = useGuidedComparator();
@@ -159,7 +158,7 @@ const AppContent: React.FC = () => {
 
   // Auto-expand parent nav items when activeSection changes
   useEffect(() => {
-    const toolSections: DashboardSection[] = ['simulator', 'choose-fund', 'ranking', 'rendite'];
+    const toolSections: DashboardSection[] = ['select-fund', 'choose-fund', 'ranking', 'rendite', 'simulator'];
     const resourceSections: DashboardSection[] = ['playbook', 'tfr-faq'];
     
     if (toolSections.includes(activeSection)) {
@@ -787,6 +786,21 @@ const AppContent: React.FC = () => {
                 )
               ) : activeSection === 'home' ? (
                 <HomePage onNavigate={(section) => setActiveSection(section)} />
+              ) : activeSection === 'select-fund' ? (
+                <div className="space-y-6 sm:space-y-8 md:space-y-10">
+                  <SectionHeader
+                    eyebrow={sectionCopy['select-fund'].eyebrow}
+                    title={sectionCopy['select-fund'].title}
+                    description={sectionCopy['select-fund'].description}
+                  />
+                  <Suspense fallback={<LazyFallback />}>
+                    <SelezionaFondoPage
+                      funds={pensionFundsData}
+                      onFundClick={handleFundClick}
+                      limiteFree={isFullAccess || authMode === 'none' ? null : FREE_PLAN_LIMIT}
+                    />
+                  </Suspense>
+                </div>
               ) : activeSection === 'rendite' ? (
                 <div className="space-y-6 sm:space-y-8 md:space-y-10">
                   <SectionHeader
@@ -795,7 +809,7 @@ const AppContent: React.FC = () => {
                     description={sectionCopy.rendite.description}
                   />
                   <Suspense fallback={<LazyFallback />}>
-                    <RenditePage funds={pensionFundsData} onFundClick={handleFundClick} alboIniziale={alboRendite} />
+                    <RenditePage funds={pensionFundsData} onFundClick={handleFundClick} />
                   </Suspense>
                 </div>
               ) : activeSection === 'ranking' ? (
@@ -1102,17 +1116,7 @@ const AppContent: React.FC = () => {
       </div>
       
       <Suspense fallback={null}>
-        <FundDetailModal
-          fund={modalFund}
-          onClose={handleCloseModal}
-          theme={theme}
-          onApriRendite={(nAlbo) => {
-            setAlboRendite(nAlbo);
-            handleCloseModal();
-            setActiveSection('rendite');
-            window.scrollTo({ top: 0 });
-          }}
-        />
+        <FundDetailModal fund={modalFund} onClose={handleCloseModal} theme={theme} />
         <UpgradeDialog
           open={showUpgradeDialog}
           onClose={() => setShowUpgradeDialog(false)}
