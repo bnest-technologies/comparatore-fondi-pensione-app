@@ -273,9 +273,12 @@ function validateRows(headers, rows) {
 
 function toGeneratedRow(row, closedFundsMap, collectiveAgreementMap) {
   const fundKey = `${row['N. Albo']}|${row['Linea/Comparto']}`;
+  // La colonna "Garanzia" del dataset vale "Si" anche per comparti azionari e bilanciati: non e
+  // un dato per comparto. La garanzia e del comparto garantito: classificazione COVIP "Garantito",
+  // oppure garanzia dichiarata nel nome (es. "GARANTITO ESG" classificato Obbligazionario Misto).
   const guarantee = CAPITAL_GUARANTEE_OVERRIDES.has(fundKey)
     ? 'false'
-    : yesNoToBooleanString(row.Garanzia);
+    : (row['Classificazione Covip'] === 'Garantito' || /GARANTIT/i.test(row['Linea/Comparto'])) ? 'true' : 'false';
   const sidecarKey = fundKeyFromRow(row);
   const costOverride = COST_DETAIL_OVERRIDES.get(sidecarKey);
   const collectiveAgreement = collectiveAgreementMap.get(sidecarKey) ?? {
