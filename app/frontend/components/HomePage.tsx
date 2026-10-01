@@ -95,9 +95,9 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               Toolkit per la consulenza previdenziale
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
-              Dal fondo del cliente
+              Confronta, valuta, simula
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 dark:from-blue-400 dark:via-cyan-400 dark:to-blue-500">
-                alla scelta documentata
+                i fondi pensione per il consulente
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">

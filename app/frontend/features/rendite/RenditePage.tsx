@@ -13,7 +13,8 @@ import type { PensionFund } from '../../types';
 import type { Frequenza } from '../../types/rendite';
 import { SUBSCRIPTION_URL } from '../../constants';
 import { useAccessoRendite, useCoperturaRendite, useRenditeConfronto, type FondoConfronto } from '../../lib/rendite';
-import type { OpzioneRendita } from '../../utils/renditeCalculator';
+import { RATE_PER_ANNO, type OpzioneRendita } from '../../utils/renditeCalculator';
+import { formatIntegerInputIT, parseIntegerInputIT } from '../../utils/simulatorCalc';
 import {
   ETICHETTA_TIPOLOGIA, MONTANTE_RIFERIMENTO, OPZIONI_CONFRONTO, confrontaRendite, etichettaTariffa, fmtPerc,
   nomeBreve, serieCoefficienti, testoCosti, type ParametriConfronto, type RigaConfronto,
@@ -73,6 +74,9 @@ const RigaRendita: React.FC<{
   riga: RigaConfronto;
   posizione: number | null;
   massimo: number;
+  /** capitale del cliente e aliquota dell'imposta sostitutiva, per la rata netta */
+  capitale: number;
+  aliquota: number;
   nome: string;
   tipoFondo: string | null;
   params: ParametriConfronto;
@@ -84,7 +88,7 @@ const RigaRendita: React.FC<{
   evidenziata: boolean;
   comparto: PensionFund | null;
   onFundClick?: (fund: PensionFund) => void;
-}> = ({ riga, posizione, massimo, nome, tipoFondo, params, aperta, onApri, inConfronto, onConfronto, confrontoPieno, evidenziata, comparto, onFundClick }) => {
+}> = ({ riga, posizione, massimo, capitale, aliquota, nome, tipoFondo, params, aperta, onApri, inConfronto, onConfronto, confrontoPieno, evidenziata, comparto, onFundClick }) => {
   const r = riga.risultato;
   const s = riga.sintesi;
   const perSesso = r.sesso !== 'U';
@@ -139,7 +143,10 @@ const RigaRendita: React.FC<{
 
             <div className="col-start-2 sm:col-start-auto sm:text-right">
               <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-slate-100">{fmtPm(riga.perMilleAnnuo)}‰</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">{fmtEuro(r.renditaAnnuaLorda)} l'anno ogni {fmtEuro(MONTANTE_RIFERIMENTO)}</p>
+              <p className="text-sm font-semibold tabular-nums text-emerald-700 dark:text-emerald-400">
+                {fmtEuro(((riga.perMilleAnnuo * capitale) / 1000) * (1 - aliquota) / RATE_PER_ANNO[params.frequenza])} <span className="text-[11px] font-normal">netti a rata</span>
+              </p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">{fmtEuro((riga.perMilleAnnuo * capitale) / 1000)} lordi l'anno su {fmtEuro(capitale)}</p>
               {!riga.nonConfrontabile && massimo > 0 && (
                 <div className="mt-1 h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-800">
                   <div className="h-1.5 rounded-full bg-violet-500" style={{ width: `${Math.max(4, (riga.perMilleAnnuo / massimo) * 100)}%` }} />
@@ -278,6 +285,9 @@ const RenditePage: React.FC<RenditePageProps> = ({ funds, onFundClick, alboInizi
   const [annoToccato, setAnnoToccato] = useState(false);
   const [sesso, setSesso] = useState<'M' | 'F'>('M');
   const [frequenza, setFrequenza] = useState<Frequenza>('mensile');
+  // calcolo rapido: capitale del cliente e imposta sostitutiva (dal 15% al 9% secondo gli anni di iscrizione)
+  const [capitale, setCapitale] = useState(MONTANTE_RIFERIMENTO);
+  const [aliquota, setAliquota] = useState(0.15);
   const [etaReversionario, setEtaReversionario] = useState(64);
   const [tasso, setTasso] = useState<number | 'tutti'>('tutti');
   const [includiStorici, setIncludiStorici] = useState(false);
@@ -377,6 +387,8 @@ const RenditePage: React.FC<RenditePageProps> = ({ funds, onFundClick, alboInizi
       riga={r}
       posizione={posizione}
       massimo={massimo}
+      capitale={capitale}
+      aliquota={aliquota}
       nome={nomeRiga(r)}
       tipoFondo={perAlbo.get(r.albo)?.type ?? null}
       params={params}
@@ -459,6 +471,24 @@ const RenditePage: React.FC<RenditePageProps> = ({ funds, onFundClick, alboInizi
               </select>
             </label>
           )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 rounded-lg bg-emerald-50/60 dark:bg-emerald-950/20 p-3">
+          <label className="space-y-1.5">
+            <Etichetta aiuto="Il capitale che il cliente converte in rendita: ogni fondo mostra subito la rata.">Capitale da convertire</Etichetta>
+            <input type="text" inputMode="numeric" value={formatIntegerInputIT(capitale)}
+              onChange={(e) => setCapitale(Math.max(0, parseIntegerInputIT(e.target.value) || 0))} className={campo} aria-label="Capitale da convertire in euro" />
+          </label>
+          <label className="space-y-1.5">
+            <Etichetta aiuto="Imposta sostitutiva sulla prestazione: 15%, ridotta dello 0,3% per ogni anno di iscrizione oltre il quindicesimo, fino al 9%.">Imposta sostitutiva</Etichetta>
+            <select value={String(aliquota)} onChange={(e) => setAliquota(Number(e.target.value))} className={campo}>
+              {[15, 13.5, 12, 10.5, 9].map((a) => <option key={a} value={a / 100}>{String(a).replace('.', ',')}%</option>)}
+            </select>
+          </label>
+          <p className="sm:col-span-2 self-end text-xs text-slate-500 dark:text-slate-400">
+            Rata netta stimata alla rateazione scelta, con l'imposta applicata a tutta la rendita per semplicità: nella realtà
+            si applica solo alla parte imponibile.
+          </p>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
