@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import type { PensionFund } from '../../types';
 import { pensionFundsData } from '../../data/funds';
-import { getRendimentoProxyWithLabel, formatPercentage } from '../../utils/simulatorCalc';
+import { getRendimentoProxyWithLabel, formatPercentage, CRESCITA_SALARIO_PREDEFINITA } from '../../utils/simulatorCalc';
+import { CrescitaSalarioContext } from './scenarioSalario';
 import { useAuth } from '../../auth';
 import { SUBSCRIPTION_URL } from '../../constants';
 import { useGuidedComparator, MAX_SIMULATION_FUNDS } from '../guided/GuidedComparatorContext';
@@ -376,6 +377,9 @@ const SimulatorPage: React.FC<SimulatorPageProps> = ({ theme }) => {
   const [tassoRendimento, setTassoRendimento] = useState(5.0);
   const [ral, setRal] = useState(30000);
   const [annoPrimaAdesione, setAnnoPrimaAdesione] = useState(2020);
+  // crescita reale del salario: la scelgono i dati del cliente, la usano tutti i passaggi
+  const [crescitaSalario, setCrescitaSalario] = useState<number>(CRESCITA_SALARIO_PREDEFINITA);
+  const scenarioSalario = useMemo(() => ({ crescita: crescitaSalario, impostaCrescita: setCrescitaSalario }), [crescitaSalario]);
 
   const currentStepIndex = STEPS.findIndex((s) => s.id === activeStep);
 
@@ -390,6 +394,7 @@ const SimulatorPage: React.FC<SimulatorPageProps> = ({ theme }) => {
   }, [currentStepIndex]);
 
   return (
+    <CrescitaSalarioContext.Provider value={scenarioSalario}>
     <div className="space-y-6 sm:space-y-8 lg:space-y-10">
       {/* Banner piano free per simulatore */}
       {isFreePlan && (
@@ -734,6 +739,7 @@ const SimulatorPage: React.FC<SimulatorPageProps> = ({ theme }) => {
       />
 
     </div>
+    </CrescitaSalarioContext.Provider>
   );
 };
 

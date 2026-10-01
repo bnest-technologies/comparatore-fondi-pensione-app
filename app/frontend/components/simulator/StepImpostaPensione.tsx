@@ -5,9 +5,13 @@ import {
   calcolaRisparmioFiscaleAnnuo,
   calcolaMontante,
   calcolaTfrAnnuoDaRal,
+  sommaContributi,
+  inEuroNominali,
+  INFLAZIONE_ATTESA,
   formatCurrency,
   formatPercentage,
 } from '../../utils/simulatorCalc';
+import { useCrescitaSalario } from './scenarioSalario';
 import AliquotaGauge from './AliquotaGauge';
 import SimulatorSlider from './SimulatorSlider';
 import StepComparisonResults from './StepComparisonResults';
@@ -48,6 +52,7 @@ const StepImpostaPensione: React.FC<StepImpostaPensioneProps> = ({
   const [annoPrimaAdesione, setAnnoPrimaAdesione] = useState(2020);
 
   const tfrAnnuoDatore = useMemo(() => calcolaTfrAnnuoDaRal(ral), [ral]);
+  const crescitaSalario = useCrescitaSalario();
   const contributoTotaleAnnuo = contributoVolontarioAnnuo + tfrAnnuoDatore;
 
   const { risparmioAnnuo, aliquotaMarginale } = useMemo(
@@ -57,8 +62,8 @@ const StepImpostaPensione: React.FC<StepImpostaPensioneProps> = ({
 
   const contributoEffettivo = contributoTotaleAnnuo + risparmioAnnuo;
   const serieConFiscale = useMemo(
-    () => calcolaMontante(montanteIniziale, contributoEffettivo, tassoRendimento, orizzonteAnni),
-    [montanteIniziale, contributoEffettivo, tassoRendimento, orizzonteAnni]
+    () => calcolaMontante(montanteIniziale, contributoEffettivo, tassoRendimento, orizzonteAnni, crescitaSalario),
+    [montanteIniziale, contributoEffettivo, tassoRendimento, orizzonteAnni, crescitaSalario]
   );
 
   const montanteLordoConFiscale = serieConFiscale[orizzonteAnni] || 0;
@@ -71,9 +76,9 @@ const StepImpostaPensione: React.FC<StepImpostaPensioneProps> = ({
   const impostaSostitutiva = montanteLordoConFiscale * aliquotaSostitutiva;
   const montanteNetto = montanteLordoConFiscale - impostaSostitutiva;
 
-  const totaleVersato = montanteIniziale + contributoTotaleAnnuo * orizzonteAnni;
+  const totaleVersato = montanteIniziale + sommaContributi(contributoTotaleAnnuo, orizzonteAnni, crescitaSalario);
   const rendimentoNettoPercentuale = totaleVersato > 0 ? (montanteNetto / totaleVersato - 1) * 100 : 0;
-  const risparmioTotale = risparmioAnnuo * orizzonteAnni;
+  const risparmioTotale = sommaContributi(risparmioAnnuo, orizzonteAnni, crescitaSalario);
 
   React.useEffect(() => {
     onValuesChange?.({ annoPrimaAdesione });
@@ -184,9 +189,12 @@ const StepImpostaPensione: React.FC<StepImpostaPensioneProps> = ({
           <div className="bg-emerald-50 dark:bg-emerald-950/30 border-t-2 border-emerald-300 dark:border-emerald-700 px-3 sm:px-5 md:px-6 py-4 sm:py-5 md:py-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <p className="text-xs sm:text-sm md:text-base font-bold text-emerald-800 dark:text-emerald-200">Netto stimato cliente</p>
+                <p className="text-xs sm:text-sm md:text-base font-bold text-emerald-800 dark:text-emerald-200">Netto stimato cliente, in euro di oggi</p>
                 <p className="text-[11px] sm:text-xs md:text-sm text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1">
                   Hai guadagnato +{formatPercentage(rendimentoNettoPercentuale, 1)} rispetto al versato
+                </p>
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Pari a circa {formatCurrency(inEuroNominali(montanteNetto, orizzonteAnni + 1))} nominali al pensionamento (inflazione {INFLAZIONE_ATTESA}%)
                 </p>
               </div>
               <span className="text-xl sm:text-2xl md:text-3xl font-extrabold text-emerald-700 dark:text-emerald-300">{formatCurrency(montanteNetto)}</span>

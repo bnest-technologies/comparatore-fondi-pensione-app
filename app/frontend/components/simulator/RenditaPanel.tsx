@@ -358,7 +358,7 @@ const RenditaPanel: React.FC<RenditaPanelProps> = ({
                   Rata {NOME_RATA[frequenzaUsata]} netta stimata
                 </p>
                 <p className="text-[11px] sm:text-xs md:text-sm text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1">
-                  {formatCurrency(renditaNettaAnnua)} netti l'anno, rivalutati ogni anno con i rendimenti della gestione
+                  {formatCurrency(renditaNettaAnnua)} netti l'anno in euro di oggi, rivalutati ogni anno con i rendimenti della gestione
                 </p>
               </div>
               <span className="text-xl sm:text-2xl md:text-3xl font-extrabold text-emerald-700 dark:text-emerald-300">

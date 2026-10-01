@@ -5,11 +5,13 @@ import {
   calcolaMontanteTFR,
   calcolaRisparmioFiscaleAnnuo,
   calcolaTfrAnnuoDaRal,
+  sommaContributi,
   formatCurrency,
   formatIntegerInputIT,
   formatPercentage,
   parseIntegerInputIT,
 } from '../../utils/simulatorCalc';
+import { useCrescitaSalario } from './scenarioSalario';
 import { SCAGLIONI_IRPEF } from '../../constants';
 import MontanteChart from './MontanteChart';
 import SimulatorSlider from './SimulatorSlider';
@@ -45,6 +47,7 @@ const StepFiscale: React.FC<StepFiscaleProps> = ({
 }) => {
 
   const tfrAnnuoDatore = useMemo(() => calcolaTfrAnnuoDaRal(ral), [ral]);
+  const crescitaSalario = useCrescitaSalario();
   const contributoTotaleAnnuo = contributoVolontarioAnnuo + tfrAnnuoDatore;
 
   const { risparmioAnnuo, aliquotaMarginale } = useMemo(
@@ -52,21 +55,21 @@ const StepFiscale: React.FC<StepFiscaleProps> = ({
     [contributoVolontarioAnnuo, ral]
   );
 
-  const risparmioTotale = risparmioAnnuo * orizzonteAnni;
+  const risparmioTotale = sommaContributi(risparmioAnnuo, orizzonteAnni, crescitaSalario);
 
   const chartData = useMemo((): MontanteSeriesPoint[] => {
-    const serieSenzaFiscale = calcolaMontante(montanteIniziale, contributoTotaleAnnuo, tassoRendimento, orizzonteAnni);
+    const serieSenzaFiscale = calcolaMontante(montanteIniziale, contributoTotaleAnnuo, tassoRendimento, orizzonteAnni, crescitaSalario);
     const contributoEffettivo = contributoTotaleAnnuo + risparmioAnnuo;
-    const serieConFiscale = calcolaMontante(montanteIniziale, contributoEffettivo, tassoRendimento, orizzonteAnni);
-    const serieTFR = calcolaMontanteTFR(montanteIniziale, contributoTotaleAnnuo, orizzonteAnni);
+    const serieConFiscale = calcolaMontante(montanteIniziale, contributoEffettivo, tassoRendimento, orizzonteAnni, crescitaSalario);
+    const serieTFR = calcolaMontanteTFR(montanteIniziale, contributoTotaleAnnuo, orizzonteAnni, crescitaSalario);
     return Array.from({ length: orizzonteAnni + 1 }, (_, anno) => ({
       anno,
       montanteSenzaFiscale: serieSenzaFiscale[anno],
       montanteConFiscale: serieConFiscale[anno],
       montanteTFR: serieTFR[anno],
-      versatoCumulato: montanteIniziale + contributoTotaleAnnuo * anno,
+      versatoCumulato: montanteIniziale + sommaContributi(contributoTotaleAnnuo, anno, crescitaSalario),
     }));
-  }, [montanteIniziale, contributoTotaleAnnuo, orizzonteAnni, tassoRendimento, risparmioAnnuo]);
+  }, [montanteIniziale, contributoTotaleAnnuo, orizzonteAnni, tassoRendimento, risparmioAnnuo, crescitaSalario]);
 
   const montanteSenzaFiscale = chartData[orizzonteAnni]?.montanteSenzaFiscale || 0;
   const montanteConFiscale = chartData[orizzonteAnni]?.montanteConFiscale || 0;

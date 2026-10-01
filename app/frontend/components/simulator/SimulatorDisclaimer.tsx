@@ -8,8 +8,9 @@ const SimulatorDisclaimer: React.FC<SimulatorDisclaimerProps> = ({ variant = 'de
   if (variant === 'compact') {
     return (
       <p className="text-[11px] text-slate-400 dark:text-slate-500 text-center">
-        ⚠️ I rendimenti passati non sono indicativi di quelli futuri. Simulazione a scopo illustrativo.
-        Calcoli basati su normativa vigente (D.Lgs. 252/2005). Tutti i dati restano nel tuo browser.
+        ⚠️ Valori in euro di oggi (inflazione al 2%). La proiezione usa i rendimenti storici del fondo, che non sono
+        indicativi di quelli futuri: non è la proiezione standardizzata COVIP. Simulazione a scopo illustrativo.
+        Tutti i dati restano nel tuo browser.
       </p>
     );
   }
@@ -33,7 +34,12 @@ const SimulatorDisclaimer: React.FC<SimulatorDisclaimerProps> = ({ variant = 'de
         </svg>
         <div className="flex-1 min-w-0">
           <ul className="space-y-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            <li>I rendimenti passati non sono indicativi di quelli futuri.</li>
+            <li>Valori in euro di oggi: inflazione attesa al 2% annuo, come nelle istruzioni COVIP; il valore nominale è indicato a parte.</li>
+            <li>
+              La proiezione ipotizza che il fondo mantenga i suoi rendimenti storici: i rendimenti passati non sono indicativi
+              di quelli futuri. Non è la proiezione standardizzata COVIP, che stima i rendimenti dall'asset allocation e dai costi:
+              per quella servirà il software di pianificazione previdenziale.
+            </li>
             <li>Simulazione a scopo illustrativo, non costituisce consulenza finanziaria.</li>
             <li>Calcoli basati su normativa vigente (D.Lgs. 252/2005) e IRPEF 2025.</li>
             <li>Tutti i calcoli avvengono nel browser — nessun dato viene salvato o trasmesso.</li>

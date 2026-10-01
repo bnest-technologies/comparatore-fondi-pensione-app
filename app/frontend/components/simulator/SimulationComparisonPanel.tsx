@@ -5,11 +5,13 @@ import {
   calcolaMontante,
   calcolaMontanteTFR,
   calcolaTfrAnnuoDaRal,
+  sommaContributi,
   calcolaRisparmioFiscaleAnnuo,
   calcolaAliquotaSostitutiva,
   formatCurrency,
   formatPercentage,
 } from '../../utils/simulatorCalc';
+import { useCrescitaSalario } from './scenarioSalario';
 import { CHART_COLORS } from '../../utils/colorMapping';
 import { formatShortFundLabel } from '../../utils/fundLabel';
 import ComparisonMontanteChart, { type ComparisonSeriesPoint } from './ComparisonMontanteChart';
@@ -54,8 +56,9 @@ const SimulationComparisonPanel: React.FC<SimulationComparisonPanelProps> = ({
 }) => {
   const annoCorrente = new Date().getFullYear();
   const tfrAnnuoDatore = useMemo(() => calcolaTfrAnnuoDaRal(ral), [ral]);
+  const crescitaSalario = useCrescitaSalario();
   const contributoTotaleAnnuo = contributoVolontarioAnnuo + tfrAnnuoDatore;
-  const totaleVersato = montanteIniziale + contributoTotaleAnnuo * orizzonteAnni;
+  const totaleVersato = montanteIniziale + sommaContributi(contributoTotaleAnnuo, orizzonteAnni, crescitaSalario);
 
   /* ── Per-fund simulation results ────────────────────────── */
   const fundResults: FundSimResult[] = useMemo(() => {
@@ -67,9 +70,9 @@ const SimulationComparisonPanel: React.FC<SimulationComparisonPanelProps> = ({
 
       const { risparmioAnnuo } = calcolaRisparmioFiscaleAnnuo(contributoVolontarioAnnuo, ral);
       const contributoEffettivo = contributoTotaleAnnuo + risparmioAnnuo;
-      const serie = calcolaMontante(montanteIniziale, contributoEffettivo, tasso, orizzonteAnni);
+      const serie = calcolaMontante(montanteIniziale, contributoEffettivo, tasso, orizzonteAnni, crescitaSalario);
       const montanteFinale = serie[orizzonteAnni] ?? 0;
-      const risparmioFiscaleTotale = risparmioAnnuo * orizzonteAnni;
+      const risparmioFiscaleTotale = sommaContributi(risparmioAnnuo, orizzonteAnni, crescitaSalario);
 
       const { aliquota: aliquotaSostitutiva, anniPartecipazione } = calcolaAliquotaSostitutiva(
         annoPrimaAdesione,
@@ -99,7 +102,7 @@ const SimulationComparisonPanel: React.FC<SimulationComparisonPanelProps> = ({
         anniPartecipazione,
       };
     });
-  }, [funds, montanteIniziale, contributoVolontarioAnnuo, contributoTotaleAnnuo, orizzonteAnni, ral, annoPrimaAdesione, annoCorrente, totaleVersato]);
+  }, [funds, montanteIniziale, contributoVolontarioAnnuo, contributoTotaleAnnuo, orizzonteAnni, ral, annoPrimaAdesione, annoCorrente, totaleVersato, crescitaSalario]);
 
   /* ── Chart data: one line per fund + TFR ─────────────────── */
   const { chartData, fundsMeta } = useMemo(() => {
@@ -111,7 +114,7 @@ const SimulationComparisonPanel: React.FC<SimulationComparisonPanelProps> = ({
     const contributoEffettivo = contributoTotaleAnnuo + risparmioAnnuo;
 
     // TFR baseline
-    const tfrSerie = calcolaMontanteTFR(montanteIniziale, contributoTotaleAnnuo, orizzonteAnni);
+    const tfrSerie = calcolaMontanteTFR(montanteIniziale, contributoTotaleAnnuo, orizzonteAnni, crescitaSalario);
     for (let i = 0; i <= orizzonteAnni; i++) {
       data[i].tfr = tfrSerie[i];
     }
@@ -119,7 +122,7 @@ const SimulationComparisonPanel: React.FC<SimulationComparisonPanelProps> = ({
     const meta = funds.map((fund, idx) => {
       const proxyInfo = getRendimentoProxyWithLabel(fund);
       const tasso = proxyInfo?.rate ?? 5.0;
-      const serie = calcolaMontante(montanteIniziale, contributoEffettivo, tasso, orizzonteAnni);
+      const serie = calcolaMontante(montanteIniziale, contributoEffettivo, tasso, orizzonteAnni, crescitaSalario);
       const key = `fund_${idx}`;
       for (let i = 0; i <= orizzonteAnni; i++) {
         data[i][key] = serie[i];
@@ -132,7 +135,7 @@ const SimulationComparisonPanel: React.FC<SimulationComparisonPanelProps> = ({
     });
 
     return { chartData: data, fundsMeta: meta };
-  }, [funds, montanteIniziale, contributoVolontarioAnnuo, contributoTotaleAnnuo, orizzonteAnni, ral]);
+  }, [funds, montanteIniziale, contributoVolontarioAnnuo, contributoTotaleAnnuo, orizzonteAnni, ral, crescitaSalario]);
 
   /* ── Best / worst helpers ───────────────────────────────── */
   const bestFund = useMemo(() => {

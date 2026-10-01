@@ -5,11 +5,15 @@ import {
   calcolaMontante,
   calcolaMontanteTFR,
   calcolaTfrAnnuoDaRal,
+  sommaContributi,
+  CRESCITE_SALARIO_REALI,
+  INFLAZIONE_ATTESA,
   formatCurrency,
   formatIntegerInputIT,
   formatPercentage,
   parseIntegerInputIT,
 } from '../../utils/simulatorCalc';
+import { useCrescitaSalario, useImpostaCrescitaSalario } from './scenarioSalario';
 import MontanteChart from './MontanteChart';
 import SimulatorSlider from './SimulatorSlider';
 import StepComparisonResults from './StepComparisonResults';
@@ -73,28 +77,30 @@ const StepMontante: React.FC<StepMontanteProps> = ({
   }, [selectedFunds]);
 
   const tfrAnnuoDatore = useMemo(() => calcolaTfrAnnuoDaRal(ral), [ral]);
+  const crescitaSalario = useCrescitaSalario();
+  const impostaCrescitaSalario = useImpostaCrescitaSalario();
   const contributoTotaleAnnuo = contributoVolontarioAnnuo + tfrAnnuoDatore;
 
   const chartData = useMemo((): MontanteSeriesPoint[] => {
-    const serieSenzaFiscale = calcolaMontante(montanteIniziale, contributoTotaleAnnuo, tassoRendimento, orizzonteAnni);
-    const serieTFR = calcolaMontanteTFR(montanteIniziale, contributoTotaleAnnuo, orizzonteAnni);
+    const serieSenzaFiscale = calcolaMontante(montanteIniziale, contributoTotaleAnnuo, tassoRendimento, orizzonteAnni, crescitaSalario);
+    const serieTFR = calcolaMontanteTFR(montanteIniziale, contributoTotaleAnnuo, orizzonteAnni, crescitaSalario);
     return Array.from({ length: orizzonteAnni + 1 }, (_, anno) => ({
       anno,
       montanteSenzaFiscale: serieSenzaFiscale[anno],
       montanteConFiscale: serieSenzaFiscale[anno],
       montanteTFR: serieTFR[anno],
-      versatoCumulato: montanteIniziale + contributoTotaleAnnuo * anno,
+      versatoCumulato: montanteIniziale + sommaContributi(contributoTotaleAnnuo, anno, crescitaSalario),
     }));
-  }, [montanteIniziale, contributoTotaleAnnuo, tassoRendimento, orizzonteAnni]);
+  }, [montanteIniziale, contributoTotaleAnnuo, tassoRendimento, orizzonteAnni, crescitaSalario]);
 
-  const totaleVersato = montanteIniziale + contributoTotaleAnnuo * orizzonteAnni;
+  const totaleVersato = montanteIniziale + sommaContributi(contributoTotaleAnnuo, orizzonteAnni, crescitaSalario);
   const montanteFinale = chartData[orizzonteAnni]?.montanteSenzaFiscale || 0;
   const rendimentoTotale = montanteFinale - totaleVersato;
   const rendimentoPercentuale = totaleVersato > 0 ? (montanteFinale / totaleVersato - 1) * 100 : 0;
 
   React.useEffect(() => {
     onValuesChange?.({ montanteIniziale, contributoVolontarioAnnuo, orizzonteAnni, tassoRendimento });
-  }, [montanteIniziale, contributoVolontarioAnnuo, orizzonteAnni, tassoRendimento, onValuesChange]);
+  }, [montanteIniziale, contributoVolontarioAnnuo, orizzonteAnni, tassoRendimento, onValuesChange, crescitaSalario]);
 
   return (
     <div className="space-y-8 sm:space-y-10">
@@ -190,6 +196,33 @@ const StepMontante: React.FC<StepMontanteProps> = ({
             accent="amber"
           />
 
+          <div className="space-y-2 sm:col-span-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Crescita reale del salario</span>
+                <p className="text-xs text-slate-400 dark:text-slate-500">
+                  Oltre l'inflazione ({INFLAZIONE_ATTESA}% annuo). Contributi e TFR crescono con il salario.
+                </p>
+              </div>
+              <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5" role="radiogroup" aria-label="Crescita reale del salario">
+                {CRESCITE_SALARIO_REALI.map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    role="radio"
+                    aria-checked={crescitaSalario === g}
+                    onClick={() => impostaCrescitaSalario(g)}
+                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all tabular-nums ${
+                      crescitaSalario === g ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
+                    {String(g).replace('.', ',')}%
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-1.5 sm:col-span-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 p-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-slate-700 dark:text-slate-300">TFR datore automatico (da RAL)</span>
@@ -267,6 +300,7 @@ const StepMontante: React.FC<StepMontanteProps> = ({
       <div className="space-y-5 sm:space-y-6">
         <div>
           <h4 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Montante stimato</h4>
+          <p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-500">In euro di oggi: inflazione al {INFLAZIONE_ATTESA}%, crescita reale del salario {String(crescitaSalario).replace('.', ',')}%.</p>
           <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-500 mt-1">I risultati si aggiornano automaticamente quando modifichi i parametri sopra</p>
         </div>
 

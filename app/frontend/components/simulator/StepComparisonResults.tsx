@@ -5,11 +5,13 @@ import {
   calcolaMontante,
   calcolaMontanteTFR,
   calcolaTfrAnnuoDaRal,
+  sommaContributi,
   calcolaRisparmioFiscaleAnnuo,
   calcolaAliquotaSostitutiva,
   formatCurrency,
   formatPercentage,
 } from '../../utils/simulatorCalc';
+import { useCrescitaSalario } from './scenarioSalario';
 import { CHART_COLORS } from '../../utils/colorMapping';
 import { formatShortFundLabel } from '../../utils/fundLabel';
 import ComparisonMontanteChart, { type ComparisonSeriesPoint } from './ComparisonMontanteChart';
@@ -71,6 +73,7 @@ const StepComparisonResults: React.FC<StepComparisonResultsProps> = ({
 }) => {
   const annoCorrente = new Date().getFullYear();
   const tfrAnnuoDatore = useMemo(() => calcolaTfrAnnuoDaRal(ral), [ral]);
+  const crescitaSalario = useCrescitaSalario();
   const contributoTotaleAnnuo = contributoVolontarioAnnuo + tfrAnnuoDatore;
 
   /* ── Per-fund simulation results ───────────────────────────── */
@@ -81,19 +84,19 @@ const StepComparisonResults: React.FC<StepComparisonResultsProps> = ({
       const label = proxyInfo?.label ?? 'default';
       const years = proxyInfo?.years ?? 10;
 
-      const totaleVersato = montanteIniziale + contributoTotaleAnnuo * orizzonteAnni;
+      const totaleVersato = montanteIniziale + sommaContributi(contributoTotaleAnnuo, orizzonteAnni, crescitaSalario);
 
       /* Step 1 - Montante (senza fiscale) */
-      const serieSenzaFiscale = calcolaMontante(montanteIniziale, contributoTotaleAnnuo, tasso, orizzonteAnni);
+      const serieSenzaFiscale = calcolaMontante(montanteIniziale, contributoTotaleAnnuo, tasso, orizzonteAnni, crescitaSalario);
       const montanteFinale = serieSenzaFiscale[orizzonteAnni] ?? 0;
       const guadagnoRendimenti = montanteFinale - totaleVersato;
       const rendimentoPercentuale = totaleVersato > 0 ? (montanteFinale / totaleVersato - 1) * 100 : 0;
 
       /* Step 2 - Fiscale */
       const { risparmioAnnuo, aliquotaMarginale } = calcolaRisparmioFiscaleAnnuo(contributoVolontarioAnnuo, ral);
-      const risparmioFiscaleTotale = risparmioAnnuo * orizzonteAnni;
+      const risparmioFiscaleTotale = sommaContributi(risparmioAnnuo, orizzonteAnni, crescitaSalario);
       const contributoEffettivo = contributoTotaleAnnuo + risparmioAnnuo;
-      const serieConFiscale = calcolaMontante(montanteIniziale, contributoEffettivo, tasso, orizzonteAnni);
+      const serieConFiscale = calcolaMontante(montanteIniziale, contributoEffettivo, tasso, orizzonteAnni, crescitaSalario);
       const montanteConFiscale = serieConFiscale[orizzonteAnni] ?? 0;
       const differenzaMontante = montanteConFiscale - montanteFinale;
       const differenzaPercentuale = montanteFinale > 0 ? (differenzaMontante / montanteFinale) * 100 : 0;
@@ -132,7 +135,7 @@ const StepComparisonResults: React.FC<StepComparisonResultsProps> = ({
         rendimentoNettoPercentuale,
       };
     });
-  }, [funds, montanteIniziale, contributoVolontarioAnnuo, contributoTotaleAnnuo, orizzonteAnni, ral, annoPrimaAdesione, annoCorrente]);
+  }, [funds, montanteIniziale, contributoVolontarioAnnuo, contributoTotaleAnnuo, orizzonteAnni, ral, annoPrimaAdesione, annoCorrente, crescitaSalario]);
 
   /* ── Chart data ─────────────────────────────────────────────── */
   const { chartData, fundsMeta } = useMemo(() => {
@@ -145,7 +148,7 @@ const StepComparisonResults: React.FC<StepComparisonResultsProps> = ({
     const contributoPerChart = useFiscale ? contributoTotaleAnnuo + risparmioAnnuo : contributoTotaleAnnuo;
 
     // TFR baseline
-    const tfrSerie = calcolaMontanteTFR(montanteIniziale, contributoTotaleAnnuo, orizzonteAnni);
+    const tfrSerie = calcolaMontanteTFR(montanteIniziale, contributoTotaleAnnuo, orizzonteAnni, crescitaSalario);
     for (let i = 0; i <= orizzonteAnni; i++) {
       data[i].tfr = tfrSerie[i];
     }
@@ -153,7 +156,7 @@ const StepComparisonResults: React.FC<StepComparisonResultsProps> = ({
     const meta = funds.map((fund, idx) => {
       const proxyInfo = getRendimentoProxyWithLabel(fund);
       const tasso = proxyInfo?.rate ?? 5.0;
-      const serie = calcolaMontante(montanteIniziale, contributoPerChart, tasso, orizzonteAnni);
+      const serie = calcolaMontante(montanteIniziale, contributoPerChart, tasso, orizzonteAnni, crescitaSalario);
       const key = `fund_${idx}`;
       for (let i = 0; i <= orizzonteAnni; i++) {
         data[i][key] = serie[i];
@@ -166,7 +169,7 @@ const StepComparisonResults: React.FC<StepComparisonResultsProps> = ({
     });
 
     return { chartData: data, fundsMeta: meta };
-  }, [funds, montanteIniziale, contributoVolontarioAnnuo, contributoTotaleAnnuo, orizzonteAnni, ral, activeStep]);
+  }, [funds, montanteIniziale, contributoVolontarioAnnuo, contributoTotaleAnnuo, orizzonteAnni, ral, activeStep, crescitaSalario]);
 
   /* ── Best fund per step ─────────────────────────────────────── */
   const bestFund = useMemo(() => {

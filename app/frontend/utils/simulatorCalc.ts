@@ -101,44 +101,72 @@ export function calcolaAliquotaSostitutiva(
 }
 
 /**
- * Calculate accumulated capital over time with compound interest
+ * Inflazione attesa, come nelle istruzioni COVIP sulle proiezioni (Sezione V): 2% annuo.
+ * Tutto il simulatore ragiona in EURO DI OGGI (termini reali): i rendimenti storici, che sono
+ * nominali, vengono ridotti dell'inflazione; i versamenti crescono solo con il salario reale.
+ */
+export const INFLAZIONE_ATTESA = 2;
+
+/** Crescita reale del salario selezionabile. 0% = il salario segue solo l'inflazione. */
+export const CRESCITE_SALARIO_REALI = [0, 0.5, 1] as const;
+export const CRESCITA_SALARIO_PREDEFINITA = 0.5;
+
+/** Tasso reale da un tasso nominale: (1 + nominale) / (1 + inflazione) - 1, in percentuale. */
+export function tassoReale(nominale: number, inflazione: number = INFLAZIONE_ATTESA): number {
+  return ((1 + nominale / 100) / (1 + inflazione / 100) - 1) * 100;
+}
+
+/** Somma dei versamenti di `anni` anni che crescono del `crescita`% reale all'anno (il primo e `annuo`). */
+export function sommaContributi(annuo: number, anni: number, crescita: number = 0): number {
+  if (anni <= 0) return 0;
+  const g = crescita / 100;
+  return g === 0 ? annuo * anni : annuo * ((1 + g) ** anni - 1) / g;
+}
+
+/** Valore nominale (euro di quell'anno) di un importo espresso in euro di oggi. */
+export function inEuroNominali(valoreReale: number, anni: number, inflazione: number = INFLAZIONE_ATTESA): number {
+  return valoreReale * (1 + inflazione / 100) ** anni;
+}
+
+/**
+ * Montante anno per anno, in euro di oggi.
+ * `tassoRendimento` e il rendimento storico NOMINALE del fondo: qui viene reso reale.
+ * Il versamento dell'anno t cresce del `crescitaSalario`% reale rispetto all'anno prima
+ * (contributi e TFR sono legati alla retribuzione).
  */
 export function calcolaMontante(
   montanteIniziale: number,
   contributoAnnuo: number,
-  tassoRendimento: number, // Annual percentage (e.g., 5.5 for 5.5%)
-  anniOrizzonte: number
+  tassoRendimento: number, // nominale, es. 5.5 per 5,5%
+  anniOrizzonte: number,
+  crescitaSalario: number = 0, // reale, es. 0.5 per 0,5%
 ): number[] {
-  const tasso = tassoRendimento / 100;
+  const tasso = tassoReale(tassoRendimento) / 100;
+  const g = crescitaSalario / 100;
   const serie: number[] = new Array(anniOrizzonte + 1);
-  
-  // Year 0: initial capital with first year return
+
+  // Anno 0: capitale iniziale con il rendimento del primo anno
   serie[0] = montanteIniziale * (1 + tasso);
-  
-  // Subsequent years: previous capital + annual contribution, both with return
+
+  // Anni successivi: capitale dell'anno prima + versamento dell'anno, entrambi rivalutati
   for (let t = 1; t <= anniOrizzonte; t++) {
-    serie[t] = (serie[t - 1] + contributoAnnuo) * (1 + tasso);
+    serie[t] = (serie[t - 1] + contributoAnnuo * (1 + g) ** (t - 1)) * (1 + tasso);
   }
-  
+
   return serie;
 }
 
 /**
- * Calculate TFR (severance pay) accumulation for comparison
- * Uses historical average TFR revaluation rates
+ * TFR lasciato in azienda, per confronto: rivalutazione media degli ultimi 10 anni,
+ * resa reale come il resto della simulazione.
  */
 export function calcolaMontanteTFR(
   montanteIniziale: number,
   contributoAnnuo: number,
-  anniOrizzonte: number
+  anniOrizzonte: number,
+  crescitaSalario: number = 0,
 ): number[] {
-  // Use 10-year average as proxy for future TFR returns
-  return calcolaMontante(
-    montanteIniziale,
-    contributoAnnuo,
-    TFR_RATES.ultimi10Anni,
-    anniOrizzonte
-  );
+  return calcolaMontante(montanteIniziale, contributoAnnuo, TFR_RATES.ultimi10Anni, anniOrizzonte, crescitaSalario);
 }
 
 export interface SimulatorInput {
@@ -148,6 +176,8 @@ export interface SimulatorInput {
   ral: number;
   annoPrimaAdesione: number;
   tassoRendimento: number; // From selected fund(s)
+  /** crescita reale del salario, in % */
+  crescitaSalario?: number;
 }
 
 export interface MontanteSeriesPoint {
@@ -184,6 +214,7 @@ export function calcolaSimulazione(input: SimulatorInput): SimulatorResult {
     ral,
     annoPrimaAdesione,
     tassoRendimento,
+    crescitaSalario = 0,
   } = input;
 
   // Step 1: Calculate capital accumulation without tax benefits
@@ -191,7 +222,8 @@ export function calcolaSimulazione(input: SimulatorInput): SimulatorResult {
     montanteIniziale,
     contributoAnnuo,
     tassoRendimento,
-    orizzonteAnni
+    orizzonteAnni,
+    crescitaSalario
   );
 
   // Step 2: Calculate tax savings
@@ -199,7 +231,7 @@ export function calcolaSimulazione(input: SimulatorInput): SimulatorResult {
     contributoAnnuo,
     ral
   );
-  const risparmioTotale = risparmioAnnuo * orizzonteAnni;
+  const risparmioTotale = sommaContributi(risparmioAnnuo, orizzonteAnni, crescitaSalario);
 
   // Step 2b: Calculate capital accumulation with reinvested tax savings
   const contributoEffettivo = contributoAnnuo + risparmioAnnuo;
@@ -207,14 +239,16 @@ export function calcolaSimulazione(input: SimulatorInput): SimulatorResult {
     montanteIniziale,
     contributoEffettivo,
     tassoRendimento,
-    orizzonteAnni
+    orizzonteAnni,
+    crescitaSalario
   );
 
   // TFR benchmark
   const serieTFR = calcolaMontanteTFR(
     montanteIniziale,
     contributoAnnuo,
-    orizzonteAnni
+    orizzonteAnni,
+    crescitaSalario
   );
 
   // Combine into time series
@@ -242,7 +276,7 @@ export function calcolaSimulazione(input: SimulatorInput): SimulatorResult {
   const montanteNetto = montanteLordoConFiscale - impostaSostitutiva;
 
   // Calculate total invested and net return
-  const totaleVersato = montanteIniziale + contributoAnnuo * orizzonteAnni;
+  const totaleVersato = montanteIniziale + sommaContributi(contributoAnnuo, orizzonteAnni, crescitaSalario);
   const rendimentoTotale = montanteNetto - totaleVersato;
   const rendimentoNettoPercentuale = (montanteNetto / totaleVersato - 1) * 100;
 
