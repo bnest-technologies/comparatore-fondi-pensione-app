@@ -395,7 +395,7 @@ export function calcolaRendita(
 
   const avvertenze = [...avvTipologia, ...avvCol, ...avvEta];
   if (tabella.qualita === 'da_verificare') {
-    avvertenze.push('Coefficienti letti da una tavola in forma di immagine: dato da verificare.');
+    avvertenze.push('Da verificare.');
   }
   if (delta !== 0) {
     avvertenze.push(

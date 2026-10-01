@@ -100,7 +100,7 @@ const RigaRendita: React.FC<{
   const avvisi = [
     r.interpolato ? 'età interpolata' : null,
     r.correzioneEtaApplicata !== 0 ? `età corretta ${r.correzioneEtaApplicata > 0 ? '+' : ''}${r.correzioneEtaApplicata}` : null,
-    riga.tabella.qualita === 'da_verificare' ? 'dato da verificare' : null,
+    riga.tabella.qualita === 'da_verificare' ? 'da verificare' : null,
     riga.tabella.tipologia === 'ltc' && params.opzione.tipologia !== 'ltc' ? 'solo con LTC' : null,
   ].filter(Boolean) as string[];
 
