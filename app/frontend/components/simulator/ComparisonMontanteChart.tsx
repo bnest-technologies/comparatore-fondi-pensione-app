@@ -117,8 +117,8 @@ const ComparisonMontanteChart: React.FC<ComparisonMontanteChartProps> = ({
 
   return (
     <div className="relative overflow-hidden">
-    <ResponsiveContainer width="100%" height={isMobile ? 260 : 320}>
-      <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+    <ResponsiveContainer width="100%" height={isMobile ? 280 : 340}>
+      <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 16 }}>
         <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
         <XAxis
           dataKey="anno"
@@ -148,7 +148,7 @@ const ComparisonMontanteChart: React.FC<ComparisonMontanteChartProps> = ({
           wrapperStyle={{ pointerEvents: 'none', zIndex: 10 }}
         />
         <Legend
-          wrapperStyle={{ fontSize: isMobile ? '11px' : '12px' }}
+          wrapperStyle={{ fontSize: isMobile ? '11px' : '12px', paddingTop: 12 }}
           iconType="line"
           iconSize={isMobile ? 12 : 14}
         />

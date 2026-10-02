@@ -120,8 +120,8 @@ const MontanteChart: React.FC<MontanteChartProps> = ({
 
   return (
     <div className="relative overflow-hidden">
-    <ResponsiveContainer width="100%" height={isMobile ? 240 : 280}>
-      <AreaChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+    <ResponsiveContainer width="100%" height={isMobile ? 260 : 300}>
+      <AreaChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 16 }}>
         <defs>
           <linearGradient id="colorMontanteSenzaFiscale" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor={SERIES_META.montanteSenzaFiscale.color} stopOpacity={0.3} />
@@ -169,7 +169,7 @@ const MontanteChart: React.FC<MontanteChartProps> = ({
           wrapperStyle={{ pointerEvents: 'none', zIndex: 10 }}
         />
         <Legend
-          wrapperStyle={{ fontSize: isMobile ? '11px' : '12px' }}
+          wrapperStyle={{ fontSize: isMobile ? '11px' : '12px', paddingTop: 12 }}
           iconType="line"
           iconSize={isMobile ? 12 : 14}
         />
