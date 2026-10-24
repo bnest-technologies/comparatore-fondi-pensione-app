@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import type { AuthUser } from './types';
+import {
+  MODALITA_INCORPORATA,
+  attesaPrimaDelRinnovo,
+  creaPonte,
+  leggiConfigSSO,
+  scambiaToken,
+  type Ponte,
+} from './lib/embed';
 
 type AuthMode = 'google' | 'invite_code' | 'none';
 
@@ -13,6 +21,10 @@ type AuthContextValue = {
   updateUser: (updater: (prev: AuthUser | null) => AuthUser | null) => void;
   token?: string;
   authMode: AuthMode;
+  /** true quando il comparatore gira dentro PrevidenzaPro */
+  embedded: boolean;
+  /** messaggio da mostrare se l'accesso incorporato non riesce */
+  embedError: string | null;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -23,6 +35,9 @@ const TOKEN_STORAGE_KEY = 'app.authToken';
 
 function readStoredToken(): string | undefined {
   if (typeof window === 'undefined') return undefined;
+  // Incorporati non si riparte mai da un token salvato: la sessione la chiediamo
+  // ogni volta alla piattaforma che ci ospita.
+  if (MODALITA_INCORPORATA) return undefined;
   try {
     const stored = window.localStorage.getItem(TOKEN_STORAGE_KEY);
     return stored || undefined;
@@ -69,11 +84,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
   const [authMode, setAuthMode] = useState<AuthMode>('google');
   const [authConfigLoaded, setAuthConfigLoaded] = useState(false);
+  const [embedError, setEmbedError] = useState<string | null>(null);
   const userRef = React.useRef<AuthUser | null>(null);
+  const ponteRef = React.useRef<Ponte | null>(null);
 
   const persistToken = (token?: string) => {
     setSessionToken(token);
     if (typeof window !== 'undefined') {
+      // Dentro un iframe la sessione resta in memoria: l'archiviazione del
+      // browser puo essere separata per sito e il token non deve sopravvivere
+      // alla chiusura della scheda.
+      if (MODALITA_INCORPORATA) {
+        if (token) (window as any).__APP_OAUTH_TOKEN = token;
+        else delete (window as any).__APP_OAUTH_TOKEN;
+        return;
+      }
       if (token) {
         (window as any).__APP_OAUTH_TOKEN = token;
         try {
@@ -115,6 +140,100 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     loadAuthConfig();
   }, [loadAuthConfig]);
+
+  // Accesso incorporato: la sessione arriva da PrevidenzaPro, non dal login.
+  useEffect(() => {
+    if (!MODALITA_INCORPORATA) return;
+
+    let attivo = true;
+    let ponte: Ponte | null = null;
+    let rinnovo: number | undefined;
+    let attesaPrimoToken: number | undefined;
+
+    const applicaToken = async (tokenPiattaforma: string) => {
+      try {
+        const esito = await scambiaToken(API_BASE, tokenPiattaforma);
+        if (!attivo) return;
+        window.clearTimeout(attesaPrimoToken);
+        persistToken(esito.token);
+
+        const dati = await fetchMe(esito.token);
+        if (!attivo) return;
+        setUser(dati);
+        userRef.current = dati;
+        setEmbedError(dati ? null : 'Accesso riuscito ma profilo non disponibile.');
+
+        // Rinnovo prima della scadenza: chiediamo un token nuovo alla pagina
+        const attesa = attesaPrimaDelRinnovo(esito.token);
+        if (attesa != null) {
+          window.clearTimeout(rinnovo);
+          rinnovo = window.setTimeout(() => ponte?.chiediToken(), attesa);
+        }
+      } catch (err) {
+        console.error('[Embed] Scambio del token non riuscito:', err);
+        if (attivo) setEmbedError("Accesso non riuscito. Ricarica la pagina da PrevidenzaPro.");
+      } finally {
+        if (attivo) setLoading(false);
+      }
+    };
+
+    const esci = () => {
+      window.clearTimeout(rinnovo);
+      setUser(null);
+      userRef.current = null;
+      persistToken(undefined);
+      setLoading(false);
+    };
+
+    (async () => {
+      try {
+        const config = await leggiConfigSSO(API_BASE);
+        if (!attivo) return;
+        if (!config.enabled || config.parent_origins.length === 0) {
+          setEmbedError("L'accesso da PrevidenzaPro non e attivo su questo ambiente.");
+          setLoading(false);
+          return;
+        }
+
+        ponte = creaPonte({
+          originiAmmesse: config.parent_origins,
+          alToken: (token) => { void applicaToken(token); },
+          alLogout: esci,
+        });
+        ponteRef.current = ponte;
+
+        // Si annuncia e basta: chiedere subito anche un token farebbe emettere
+        // due accessi per lo stesso ingresso. Se dopo qualche secondo non e
+        // arrivato nulla, la pagina potrebbe aver finito di caricare prima di
+        // noi e non aver sentito l'annuncio: allora lo chiediamo.
+        ponte.annunciaPronto();
+        window.setTimeout(() => {
+          if (attivo && !userRef.current) ponte?.chiediToken();
+        }, 4000);
+
+        attesaPrimoToken = window.setTimeout(() => {
+          if (!attivo || userRef.current) return;
+          setEmbedError("Nessuna risposta da PrevidenzaPro. Riprova dalla piattaforma.");
+          setLoading(false);
+        }, 15000);
+      } catch (err) {
+        console.error('[Embed] Configurazione SSO non leggibile:', err);
+        if (attivo) {
+          setEmbedError('Servizio di accesso non raggiungibile.');
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      attivo = false;
+      window.clearTimeout(rinnovo);
+      window.clearTimeout(attesaPrimoToken);
+      ponte?.chiudi();
+      ponteRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -195,7 +314,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // auth mode is not 'google', skip the automatic /auth/me call to avoid unwanted 401s.
     (async () => {
       if (!authConfigLoaded) return;
-      
+
+      // Incorporati, la sessione la porta l'effetto dedicato: finche non c'e un
+      // token non ha senso chiedere /auth/me, prenderemmo solo un 401.
+      if (MODALITA_INCORPORATA && !sessionToken) return;
+
       // For no-auth local mode, check if we have a stored token.
       if (authMode === 'none') {
         // If we have a token, validate it
@@ -227,6 +350,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async () => {
     if (authMode === 'none') {
+      return;
+    }
+
+    // Incorporati non apriamo nessun popup: Google blocca le proprie pagine di
+    // accesso dentro un iframe, e comunque il diritto di accesso lo decide
+    // PrevidenzaPro. Qui possiamo solo richiedere un token nuovo.
+    if (MODALITA_INCORPORATA) {
+      ponteRef.current?.chiediToken();
       return;
     }
 
@@ -358,6 +489,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       updateUser: (updater) => setUser((prev) => updater(prev)),
       token: sessionToken,
       authMode,
+      embedded: MODALITA_INCORPORATA,
+      embedError,
     }}>
       {children}
     </AuthContext.Provider>

@@ -6,6 +6,7 @@ import FilterControls from './components/FilterControls';
 import FundAnalysisPanel from './components/FundAnalysisPanel';
 import ActiveFiltersChips from './components/ActiveFiltersChips';
 import { CATEGORY_MAP } from './constants';
+import { MODALITA_INCORPORATA } from './lib/embed';
 import { useAuth } from './auth';
 import Footer from './components/Footer';
 import MobileBottomNav from './components/MobileBottomNav';
@@ -93,7 +94,8 @@ const LazyFallback: React.FC = () => (
 );
 
 const AppContent: React.FC = () => {
-  const [view, setView] = useState<View>(() => resolveRouteFromPathname(window.location.pathname).view);
+  const [view, setView] = useState<View>(() =>
+    MODALITA_INCORPORATA ? 'dashboard' : resolveRouteFromPathname(window.location.pathname).view);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('theme');
     if (stored === 'light' || stored === 'dark') {
@@ -120,7 +122,7 @@ const AppContent: React.FC = () => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'ultimoAnno', direction: 'descending' });
   const [modalFund, setModalFund] = useState<PensionFund | null>(null);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const { user, loading: authLoading, authMode } = useAuth();
+  const { user, loading: authLoading, authMode, embedded, embedError } = useAuth();
   const { selectedFundIds, toggleSelectedFund, clearSelectedFunds, setEntryMode, setSimulationFundIds } = useGuidedComparator();
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [showFreeBanner, setShowFreeBanner] = useState(true);
@@ -179,13 +181,15 @@ const AppContent: React.FC = () => {
     }
 
     if (!user) {
-      // Close login modal, upgrade dialogs and show the home
       setShowLoginModal(false);
       setShowUpgradeDialog(false);
+      // Incorporati non si torna alla pagina pubblica: senza sessione valida
+      // mostriamo un avviso e si rientra da PrevidenzaPro.
+      if (embedded) return;
       setView('playbook');
       setActiveSection('home');
     }
-  }, [user, authLoading, authMode]);
+  }, [user, authLoading, authMode, embedded]);
 
   // Back/forward navigation support
   useEffect(() => {
@@ -534,6 +538,32 @@ const AppContent: React.FC = () => {
     }
   }, [activeSection, setEntryMode]);
 
+  // Incorporati: finche la sessione non arriva, o se non arriva affatto,
+  // mostriamo solo un messaggio. Il guscio dell'app lo mette PrevidenzaPro.
+  if (embedded && (authLoading || !user)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950 p-6">
+        <div className="max-w-sm text-center space-y-3">
+          {authLoading && !embedError ? (
+            <>
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-emerald-600" />
+              <p className="text-sm text-slate-500 dark:text-slate-400">Accesso in corso...</p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-base font-semibold text-slate-800 dark:text-slate-100">
+                Comparatore non disponibile
+              </h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {embedError || "Sessione non valida. Riapri il comparatore da PrevidenzaPro."}
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (view === 'playbook') {
     return (
       <>
@@ -563,6 +593,7 @@ const AppContent: React.FC = () => {
       <ScrollProgress position="top" height={3} color="bg-gradient-to-r from-sky-600 to-cyan-600" />
       <PwaUpdateBanner />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
+        {!MODALITA_INCORPORATA && (
         <Header
           theme={theme}
           toggleTheme={toggleTheme}
@@ -574,10 +605,15 @@ const AppContent: React.FC = () => {
           onSelectNav={setActiveSection}
           sidebarCollapsed={sidebarCollapsed}
         />
-      
-      {/* Layout with Sidebar */}
-      <div className="flex pt-16 md:pt-[81px] min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-81px)]">
+        )}
+
+      {/* Layout with Sidebar. Incorporati, testata e barra laterale le mette
+          PrevidenzaPro: qui restano solo i contenuti. */}
+      <div className={MODALITA_INCORPORATA
+        ? "flex min-h-screen"
+        : "flex pt-16 md:pt-[81px] min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-81px)]"}>
         {/* Fixed Sidebar Navigation */}
+        {!MODALITA_INCORPORATA && (
         <aside
           className={`hidden md:block fixed left-0 top-[81px] h-[calc(100vh-81px)] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-r border-slate-200 dark:border-slate-800 shadow-lg transition-all duration-300 z-10 ${
             sidebarCollapsed ? 'w-20' : 'w-56 lg:w-60'
@@ -724,11 +760,12 @@ const AppContent: React.FC = () => {
             </div>
           </nav>
         </aside>
+        )}
 
         {/* Main Content with margin for sidebar */}
         <main 
           className={`flex-1 min-w-0 transition-all duration-300 ${
-            sidebarCollapsed ? 'md:ml-20' : 'md:ml-56 lg:ml-60'
+            MODALITA_INCORPORATA ? '' : sidebarCollapsed ? 'md:ml-20' : 'md:ml-56 lg:ml-60'
           }`}
         >
           <div 
@@ -1131,12 +1168,14 @@ const AppContent: React.FC = () => {
             setView('dashboard');
           }}
         />
-        <FeedbackWidget onRequireLogin={openLoginModal} />
+        {!MODALITA_INCORPORATA && <FeedbackWidget onRequireLogin={openLoginModal} />}
       </Suspense>
-      <Footer sidebarCollapsed={sidebarCollapsed} hasSidebar={true} />
+      {!MODALITA_INCORPORATA && <Footer sidebarCollapsed={sidebarCollapsed} hasSidebar={true} />}
       
       {/* Mobile Bottom Navigation Bar */}
-      <MobileBottomNav activeSection={activeSection} onNavigate={setActiveSection} />
+      {!MODALITA_INCORPORATA && (
+        <MobileBottomNav activeSection={activeSection} onNavigate={setActiveSection} />
+      )}
       
       <AccessStatusBanner
         visible={!isFullAccess && Boolean(user) && showFreeBanner && !authLoading}

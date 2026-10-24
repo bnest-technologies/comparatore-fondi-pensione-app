@@ -18,7 +18,8 @@ from backend.routes import (
     funds,
     simulator,
     content,
-    rendite
+    rendite,
+    sso
 )
 from backend.middleware.request_id import RequestIDMiddleware
 from backend.middleware.logging import LoggingMiddleware
@@ -73,6 +74,8 @@ app.include_router(health.router)
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 # New Google OAuth routes with GIS popup flow
 app.include_router(google_auth.router, prefix="/auth", tags=["auth", "google"])
+# Accesso con identita PrevidenzaPro (comparatore incorporato)
+app.include_router(sso.router, prefix="/auth", tags=["auth", "sso"])
 app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(payments.router, prefix="/payments", tags=["payments"])
 

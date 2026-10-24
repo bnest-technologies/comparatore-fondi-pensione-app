@@ -48,7 +48,23 @@
     }
   };
 </script>
-<script type="text/javascript" src="https://embeds.iubenda.com/widgets/f9702ada-89a7-48b9-a1ef-cf564dc8a1a8.js"></script>
+<script type="text/javascript">
+  // Incorporati in PrevidenzaPro il banner dei cookie non si mostra: il consenso
+  // lo raccoglie la piattaforma che ci ospita, e un secondo banner dentro
+  // l'iframe confonderebbe l'utente.
+  (function () {
+    try {
+      var parametri = new URLSearchParams(window.location.search);
+      var incorporato = (parametri.get('embed') === '1' || parametri.get('embed') === 'true')
+        && window.self !== window.top;
+      if (incorporato) return;
+    } catch (e) { /* in dubbio, il banner si mostra */ }
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.src = 'https://embeds.iubenda.com/widgets/f9702ada-89a7-48b9-a1ef-cf564dc8a1a8.js';
+    document.head.appendChild(s);
+  })();
+</script>
 </head>
   <body class="bg-slate-50 dark:bg-slate-950">
     <div id="root"></div>
