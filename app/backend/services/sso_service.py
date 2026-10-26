@@ -36,6 +36,17 @@ ALGORITMO = "RS256"
 PREFISSO_ID = "pp"
 CHIAVE_METADATI = "previdenzapro"
 
+# Campi che PrevidenzaPro mette nel token e che a noi oggi non servono per
+# decidere l'accesso, ma che conserviamo sul profilo: torneranno utili quando
+# arriveranno le API degli abbonamenti, e intanto aiutano a capire un accesso
+# guardando il profilo. Un campo che non c'e viene semplicemente saltato.
+CLAIM_DA_CONSERVARE = (
+    "organization_id",
+    "software",
+    "access_level",
+    "authorization_valid_until",
+)
+
 
 class SSOError(Exception):
     """Token non valido, scaduto, gia usato o emesso da chi non conosciamo."""
@@ -347,6 +358,7 @@ async def trova_o_crea_utente(identita: IdentitaSSO) -> UserProfile:
         "sub": identita.sub,
         "collegato_per": collegamento,
         "ultimo_accesso_sso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        **{c: identita.claims[c] for c in CLAIM_DA_CONSERVARE if identita.claims.get(c) is not None},
     }
 
     profilo = UserProfileCreate(

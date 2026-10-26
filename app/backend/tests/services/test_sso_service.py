@@ -127,6 +127,67 @@ async def test_email_normalizzata_in_minuscolo(ambiente):
 
 
 @pytest.mark.asyncio
+async def test_campi_aggiuntivi_non_disturbano(ambiente):
+    """
+    PrevidenzaPro mette nel token anche campi che a noi oggi non servono.
+    Devono passare senza far fallire la verifica e restare leggibili, perche
+    serviranno quando arriveranno le API degli abbonamenti.
+    """
+    token = _token(ambiente["privata"], ambiente["kid"], claims_extra={
+        "organization_id": "org_0001",
+        "software": "comparatore-fondi-pensione",
+        "access_level": "licensed",
+        "authorization_valid_until": "2027-06-12T23:59:59+02:00",
+        "campo_che_inventeranno_domani": {"annidato": [1, 2, 3]},
+    })
+    identita = await _verifica(token, ambiente)
+
+    assert identita.email == "consulente@example.com"
+    assert identita.piano == "full-access"
+    assert identita.claims["organization_id"] == "org_0001"
+    assert identita.claims["access_level"] == "licensed"
+    assert identita.claims["authorization_valid_until"] == "2027-06-12T23:59:59+02:00"
+
+
+@pytest.mark.asyncio
+async def test_campi_aggiuntivi_finiscono_nel_profilo(ambiente, monkeypatch):
+    """I campi utili si conservano sul profilo dell'utente."""
+    from backend.services import user_service
+
+    salvati = {}
+
+    async def nessun_profilo(_valore):
+        return None
+
+    async def intercetta(profilo, *, mark_login=False):
+        salvati.update(profilo.model_dump())
+        from backend.schemas.user import UserProfile
+        return UserProfile(id=profilo.id, email=profilo.email, name=profilo.name,
+                           plan=profilo.plan, status=profilo.status, roles=["user"])
+
+    monkeypatch.setattr(user_service, "get_user_by_id", nessun_profilo)
+    monkeypatch.setattr(user_service, "get_user_by_email", nessun_profilo)
+    monkeypatch.setattr(user_service, "upsert_user", intercetta)
+
+    token = _token(ambiente["privata"], ambiente["kid"], claims_extra={
+        "organization_id": "org_0001",
+        "access_level": "licensed",
+        "authorization_valid_until": "2027-06-12T23:59:59+02:00",
+    })
+    identita = await _verifica(token, ambiente)
+    await sso_service.trova_o_crea_utente(identita)
+
+    conservati = salvati["metadata"]["previdenzapro"]
+    assert conservati["sub"] == identita.sub
+    assert conservati["organization_id"] == "org_0001"
+    assert conservati["access_level"] == "licensed"
+    assert conservati["authorization_valid_until"] == "2027-06-12T23:59:59+02:00"
+    # l'identificativo interno nasce dal loro sub, senza rischio di collisioni
+    assert salvati["id"] == f"pp_{identita.sub}"
+    assert salvati["status"] == "active"
+
+
+@pytest.mark.asyncio
 async def test_il_jwks_viene_riusato_dalla_cache(ambiente):
     for _ in range(3):
         await _verifica(_token(ambiente["privata"], ambiente["kid"]), ambiente)

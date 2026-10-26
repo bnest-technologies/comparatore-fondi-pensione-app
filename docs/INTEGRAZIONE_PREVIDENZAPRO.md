@@ -37,9 +37,18 @@ compreso.
 | `email` | si | email dell'utente |
 | `email_verified` | no | se assente si considera verificata |
 | `name` | no | nome e cognome |
+| `organization_id` | no | organizzazione, anche individuale |
+| `software` | no | identificativo del comparatore |
+| `access_level` | no | per esempio `licensed` |
+| `authorization_valid_until` | no | scadenza dell'autorizzazione |
 
 I nomi dei campi facoltativi si possono cambiare dalla configurazione
 (`APP_SSO_CLAIM_EMAIL`, `APP_SSO_CLAIM_NAME`, ...), senza toccare il codice.
+
+Campi in piu nel token non danno fastidio: la verifica ignora quelli che non
+conosce. Gli ultimi quattro della tabella non decidono l'accesso, ma vengono
+conservati nei metadati del profilo e serviranno per la rendicontazione degli
+abbonamenti.
 
 ### Cosa viene rifiutato
 
@@ -197,7 +206,7 @@ cd app/frontend && VITE_API_BASE=http://localhost:8011 npx vite --port 5174 --st
 app/backend/.venv/Scripts/python.exe scripts/local/simulatore_previdenzapro.py
 ```
 
-Test della verifica: `pytest tests/services/test_sso_service.py` (19 test).
+Test della verifica: `pytest tests/services/test_sso_service.py` (21 test).
 
 ## Cosa manca
 
