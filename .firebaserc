@@ -16,6 +16,9 @@
       "hosting": {
         "app": [
           "accademia-previdenza"
+        ],
+        "apptest": [
+          "accademia-previdenza-test"
         ]
       }
     }
