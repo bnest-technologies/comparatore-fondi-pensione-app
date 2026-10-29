@@ -32,6 +32,14 @@ app = FastAPI(title="Webapp Factory API", version="1.0.0")
 import logging
 logger = logging.getLogger("uvicorn.error")
 
+# I nostri moduli scrivono con logging.getLogger(__name__), quindi sotto il
+# logger "backend". Senza questa riga il livello ereditato e WARNING e le righe
+# informative (per esempio gli accessi SSO) non arrivano a Cloud Logging.
+# Non tocchiamo il logger radice, per non rendere loquaci anche le librerie.
+logging.getLogger("backend").setLevel(
+    getattr(logging, (os.getenv("APP_LOG_LEVEL") or "INFO").upper(), logging.INFO)
+)
+
 
 @app.on_event("startup")
 def log_startup_info():

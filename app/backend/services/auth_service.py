@@ -151,8 +151,15 @@ def create_session_token(
     roles: Optional[List[str]] = None,
     plan: Optional[str] = None,
     extra_claims: Optional[Dict[str, Any]] = None,
+    expires_at: Optional[int] = None,
 ) -> str:
-    """Create a signed JWT containing session data for the user."""
+    """
+    Create a signed JWT containing session data for the user.
+
+    `expires_at` (epoch seconds) caps the session: the token never lives past
+    that moment, even if the configured session length would be longer. Used by
+    the PrevidenzaPro SSO, where the session must not outlive the authorization.
+    """
 
     jwt_secret, jwt_algorithm, jwt_expire_minutes, jwt_audience, jwt_issuer = _get_jwt_runtime_settings()
     
@@ -163,6 +170,9 @@ def create_session_token(
     logger.debug(f"[create_session_token] Audience: {jwt_audience}, Issuer: {jwt_issuer}")
     
     issued_at = int(time.time())
+    expires = issued_at + jwt_expire_minutes * 60
+    if expires_at is not None:
+        expires = min(expires, int(expires_at))
     normalized_plan = _normalize_plan(plan or "free", plan or "free")
     claims: Dict[str, Any] = {
         "sub": user_id,
@@ -173,7 +183,7 @@ def create_session_token(
         "roles": roles or ["user"],
         "plan": normalized_plan,
         "iat": issued_at,
-        "exp": issued_at + jwt_expire_minutes * 60,
+        "exp": expires,
     }
 
     if jwt_audience:

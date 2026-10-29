@@ -103,6 +103,40 @@ async def _verifica(token: str, ambiente) -> Any:
     return await sso_service.verifica_token(token, fetch_jwks=ambiente["jwks"])
 
 
+def _durata_sessione(sessione: str) -> int:
+    """Quanti secondi dura la sessione emessa dal comparatore."""
+    claims = jwt.decode(sessione, options={"verify_signature": False}, algorithms=["HS256"])
+    return int(claims["exp"]) - int(claims["iat"])
+
+
+async def _accedi(ambiente, monkeypatch, *, claims_extra: dict):
+    """
+    Accesso completo attraverso accedi_con_sso, con un profilo finto al posto
+    di Firestore. Restituisce la sessione emessa e l'identita letta dal token.
+    """
+    from backend.schemas.user import UserProfile
+    from backend.services import user_service
+
+    async def nessun_profilo(_valore):
+        return None
+
+    async def profilo_finto(profilo, *, mark_login=False):
+        return UserProfile(id=profilo.id, email=profilo.email, name=profilo.name,
+                           plan=profilo.plan, status=profilo.status, roles=["user"])
+
+    monkeypatch.setattr(user_service, "get_user_by_id", nessun_profilo)
+    monkeypatch.setattr(user_service, "get_user_by_email", nessun_profilo)
+    monkeypatch.setattr(user_service, "upsert_user", profilo_finto)
+
+    token = _token(ambiente["privata"], ambiente["kid"], claims_extra=claims_extra)
+    identita = await sso_service.verifica_token(token, fetch_jwks=ambiente["jwks"])
+
+    # stesso token, nuovo jti: verifica_token lo ha gia consumato
+    token = _token(ambiente["privata"], ambiente["kid"], claims_extra=claims_extra)
+    sessione, _ = await sso_service.accedi_con_sso(token, fetch_jwks=ambiente["jwks"])
+    return sessione, identita
+
+
 # --------------------------------------------------------------------------- #
 # Token validi
 # --------------------------------------------------------------------------- #
@@ -185,6 +219,88 @@ async def test_campi_aggiuntivi_finiscono_nel_profilo(ambiente, monkeypatch):
     # l'identificativo interno nasce dal loro sub, senza rischio di collisioni
     assert salvati["id"] == f"pp_{identita.sub}"
     assert salvati["status"] == "active"
+
+
+# --------------------------------------------------------------------------- #
+# Scadenza dell'autorizzazione
+# --------------------------------------------------------------------------- #
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("scritta_come", ["iso_con_fuso", "iso_zulu", "epoch", "epoch_stringa"])
+async def test_scadenza_autorizzazione_letta_in_ogni_formato(ambiente, scritta_come):
+    from datetime import datetime, timezone
+    fra_un_ora = int(time.time()) + 3600
+    istante = datetime.fromtimestamp(fra_un_ora, tz=timezone.utc)
+    valore = {
+        "iso_con_fuso": istante.astimezone().isoformat(),
+        "iso_zulu": istante.isoformat().replace("+00:00", "Z"),
+        "epoch": fra_un_ora,
+        "epoch_stringa": str(fra_un_ora),
+    }[scritta_come]
+
+    token = _token(ambiente["privata"], ambiente["kid"],
+                   claims_extra={"authorization_valid_until": valore})
+    identita = await _verifica(token, ambiente)
+    assert abs(identita.autorizzazione_fino_a - fra_un_ora) <= 1
+
+
+@pytest.mark.asyncio
+async def test_autorizzazione_gia_scaduta_rifiutata(ambiente):
+    """Il token puo essere valido, ma se l'autorizzazione e finita non si entra."""
+    token = _token(ambiente["privata"], ambiente["kid"], claims_extra={
+        "authorization_valid_until": int(time.time()) - 3600,
+    })
+    with pytest.raises(SSOError) as errore:
+        await _verifica(token, ambiente)
+    assert errore.value.codice == "autorizzazione_scaduta"
+
+
+@pytest.mark.asyncio
+async def test_scadenza_illeggibile_non_blocca_l_accesso(ambiente):
+    """Un formato che non riconosciamo viene ignorato, non fa fallire l'accesso."""
+    token = _token(ambiente["privata"], ambiente["kid"],
+                   claims_extra={"authorization_valid_until": "quando sara"})
+    identita = await _verifica(token, ambiente)
+    assert identita.autorizzazione_fino_a is None
+
+
+@pytest.mark.asyncio
+async def test_senza_scadenza_la_sessione_dura_quanto_di_consueto(ambiente, monkeypatch):
+    sessione, _ = await _accedi(ambiente, monkeypatch, claims_extra={})
+    durata = _durata_sessione(sessione)
+    assert durata > 10 * 60, "senza vincoli la sessione usa la durata configurata"
+
+
+@pytest.mark.asyncio
+async def test_la_sessione_non_sopravvive_all_autorizzazione(ambiente, monkeypatch):
+    """
+    Se l'autorizzazione scade fra cinque minuti, la sessione dura cinque minuti
+    e non la mezz'ora consueta.
+    """
+    fra_cinque_minuti = int(time.time()) + 300
+    sessione, _ = await _accedi(ambiente, monkeypatch, claims_extra={
+        "authorization_valid_until": fra_cinque_minuti,
+    })
+    durata = _durata_sessione(sessione)
+    assert 240 <= durata <= 300, f"attesi circa 5 minuti, ottenuti {durata}s"
+
+
+@pytest.mark.asyncio
+async def test_autorizzazione_lontana_non_allunga_la_sessione(ambiente, monkeypatch):
+    """La scadenza dell'autorizzazione accorcia la sessione, non la allunga."""
+    fra_un_anno = int(time.time()) + 365 * 24 * 3600
+    sessione, _ = await _accedi(ambiente, monkeypatch, claims_extra={
+        "authorization_valid_until": fra_un_anno,
+    })
+    assert _durata_sessione(sessione) < 24 * 3600
+
+
+@pytest.mark.asyncio
+async def test_il_sub_di_previdenzapro_resta_nella_sessione(ambiente, monkeypatch):
+    sessione, identita = await _accedi(ambiente, monkeypatch, claims_extra={})
+    claims = jwt.decode(sessione, options={"verify_signature": False}, algorithms=["HS256"])
+    assert claims["sso_sub"] == identita.sub
+    assert claims["provider"] == "previdenzapro"
 
 
 @pytest.mark.asyncio

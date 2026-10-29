@@ -68,6 +68,43 @@ class IdentitaSSO:
     piano: str
     jti: str
     claims: Dict[str, Any]
+    # fino a quando PrevidenzaPro autorizza questo utente, in epoch; None se
+    # non lo dichiara
+    autorizzazione_fino_a: Optional[int] = None
+
+
+def _istante_da_claim(valore: Any) -> Optional[int]:
+    """
+    Legge una scadenza dal token e la riporta a epoch.
+
+    PrevidenzaPro la manda come data ISO 8601 con fuso orario; accettiamo anche
+    un numero, cosi un cambio di formato da parte loro non ci blocca. Un valore
+    illeggibile viene segnalato e ignorato: non deve impedire l'accesso.
+    """
+    if valore is None:
+        return None
+    if isinstance(valore, bool):
+        return None
+    if isinstance(valore, (int, float)):
+        return int(valore)
+    if not isinstance(valore, str):
+        return None
+
+    testo = valore.strip()
+    if not testo:
+        return None
+    if testo.isdigit():
+        return int(testo)
+
+    from datetime import datetime, timezone
+    try:
+        istante = datetime.fromisoformat(testo.replace("Z", "+00:00"))
+    except ValueError:
+        logger.warning("Scadenza dell'autorizzazione illeggibile nel token: %r", testo)
+        return None
+    if istante.tzinfo is None:
+        istante = istante.replace(tzinfo=timezone.utc)
+    return int(istante.timestamp())
 
 
 # --------------------------------------------------------------------------- #
@@ -294,6 +331,12 @@ async def verifica_token(token: str, *, fetch_jwks: Optional[Callable] = None) -
     if eta > config.max_token_age_seconds + config.leeway_seconds:
         raise SSOError("Token troppo vecchio", codice="token_scaduto")
 
+    # Scadenza dell'autorizzazione: se e gia passata non si entra, anche se il
+    # token in se sarebbe ancora valido.
+    autorizzazione_fino_a = _istante_da_claim(claims.get(config.claim_authorization_until))
+    if autorizzazione_fino_a is not None and autorizzazione_fino_a <= time.time() - config.leeway_seconds:
+        raise SSOError("Autorizzazione scaduta", codice="autorizzazione_scaduta")
+
     jti = str(claims["jti"])
     scadenza = float(claims.get("exp", time.time() + 60))
     await _registro_jti.registra(jti, scadenza)
@@ -314,6 +357,7 @@ async def verifica_token(token: str, *, fetch_jwks: Optional[Callable] = None) -
         piano=piano,
         jti=jti,
         claims=claims,
+        autorizzazione_fino_a=autorizzazione_fino_a,
     )
 
 
@@ -382,6 +426,10 @@ async def accedi_con_sso(token: str, *, fetch_jwks: Optional[Callable] = None) -
     identita = await verifica_token(token, fetch_jwks=fetch_jwks)
     profilo = await trova_o_crea_utente(identita)
 
+    extra: Dict[str, Any] = {"sso_sub": identita.sub}
+    if identita.autorizzazione_fino_a is not None:
+        extra["sso_auth_until"] = identita.autorizzazione_fino_a
+
     sessione = auth_service.create_session_token(
         user_id=profilo.id,
         email=profilo.email,
@@ -390,9 +438,16 @@ async def accedi_con_sso(token: str, *, fetch_jwks: Optional[Callable] = None) -
         provider="previdenzapro",
         roles=profilo.roles or ["user"],
         plan=profilo.plan or identita.piano,
-        extra_claims={"sso_sub": identita.sub},
+        extra_claims=extra,
+        # la sessione non sopravvive all'autorizzazione: se questa scade prima
+        # dei 30 minuti consueti, la sessione scade con lei
+        expires_at=identita.autorizzazione_fino_a,
     )
-    logger.info("Accesso SSO completato utente=%s piano=%s", profilo.id, profilo.plan)
+    logger.info(
+        "Accesso SSO completato utente=%s sub=%s piano=%s autorizzato_fino_a=%s",
+        profilo.id, identita.sub, profilo.plan,
+        identita.autorizzazione_fino_a if identita.autorizzazione_fino_a is not None else "non dichiarato",
+    )
     return sessione, profilo
 
 

@@ -40,15 +40,22 @@ compreso.
 | `organization_id` | no | organizzazione, anche individuale |
 | `software` | no | identificativo del comparatore |
 | `access_level` | no | per esempio `licensed` |
-| `authorization_valid_until` | no | scadenza dell'autorizzazione |
+| `authorization_valid_until` | no | scadenza dell'autorizzazione, vedi sotto |
 
 I nomi dei campi facoltativi si possono cambiare dalla configurazione
 (`APP_SSO_CLAIM_EMAIL`, `APP_SSO_CLAIM_NAME`, ...), senza toccare il codice.
 
 Campi in piu nel token non danno fastidio: la verifica ignora quelli che non
-conosce. Gli ultimi quattro della tabella non decidono l'accesso, ma vengono
-conservati nei metadati del profilo e serviranno per la rendicontazione degli
-abbonamenti.
+conosce. `organization_id`, `software` e `access_level` non decidono l'accesso,
+ma vengono conservati nei metadati del profilo e serviranno per la
+rendicontazione degli abbonamenti.
+
+`authorization_valid_until` invece viene applicato: **la sessione del
+comparatore non sopravvive all'autorizzazione.** Se la scadenza e piu vicina dei
+30 minuti consueti, la sessione dura fino a quel momento; se e gia passata,
+l'accesso viene rifiutato anche con un token per il resto valido. Si accetta sia
+una data ISO 8601 con fuso orario, sia un epoch. Un valore illeggibile viene
+segnalato nei log e ignorato, senza bloccare l'accesso.
 
 ### Cosa viene rifiutato
 
@@ -59,7 +66,8 @@ abbonamenti.
 - token scaduto, o emesso piu di 120 secondi prima (tolleranza 60 secondi sullo
   scarto di orologio);
 - token gia usato, riconosciuto dal `jti`;
-- campi obbligatori mancanti.
+- campi obbligatori mancanti;
+- `authorization_valid_until` gia passato.
 
 In tutti questi casi la risposta e `401` con un messaggio generico. Il motivo
 preciso resta nei nostri log.
@@ -104,8 +112,10 @@ avviso.
 
 ## Comportamento della sessione
 
-- Dura 30 minuti; il rinnovo parte due minuti prima della scadenza con
-  `token-request`.
+- Dura 30 minuti, oppure meno se `authorization_valid_until` e piu vicina. Il
+  rinnovo parte due minuti prima della scadenza con `token-request`, quindi una
+  sessione accorciata si rinnova prima: se nel frattempo l'autorizzazione e
+  finita, PrevidenzaPro non emette il token e l'utente esce.
 - Resta **in memoria**: niente `localStorage`, perche dentro un iframe
   l'archiviazione puo essere separata per sito. Ricaricando la pagina si
   richiede il token.
@@ -173,6 +183,7 @@ verificato PrevidenzaPro.
 | `APP_SSO_LEEWAY_SECONDS` | `60` | tolleranza sullo scarto di orologio |
 | `APP_SSO_MAX_TOKEN_AGE` | `120` | eta massima del token |
 | `APP_SSO_DEFAULT_PLAN` | `full-access` | piano di chi entra via SSO |
+| `APP_SSO_CLAIM_AUTH_UNTIL` | `authorization_valid_until` | claim con la scadenza dell'autorizzazione |
 
 Da aggiungere su Firebase Hosting quando i domini sono confermati, per impedire
 che il comparatore venga incorporato altrove:
@@ -206,7 +217,7 @@ cd app/frontend && VITE_API_BASE=http://localhost:8011 npx vite --port 5174 --st
 app/backend/.venv/Scripts/python.exe scripts/local/simulatore_previdenzapro.py
 ```
 
-Test della verifica: `pytest tests/services/test_sso_service.py` (21 test).
+Test della verifica: `pytest tests/services/test_sso_service.py` (31 test).
 
 ## Cosa manca
 

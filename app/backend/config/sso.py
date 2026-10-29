@@ -21,6 +21,8 @@ Variabili (prefisso APP_SSO_):
     APP_SSO_CLAIM_EMAIL_VERIFIED  default "email_verified"
     APP_SSO_CLAIM_NAME         nome del claim con il nome (default "name")
     APP_SSO_CLAIM_PLAN         claim facoltativo con il livello di accesso
+    APP_SSO_CLAIM_AUTH_UNTIL   claim con la scadenza dell'autorizzazione
+                               (default "authorization_valid_until")
     APP_SSO_DEFAULT_PLAN       piano assegnato quando il claim non c'e
                                (default "full-access")
 """
@@ -69,6 +71,7 @@ class SSOConfig:
     claim_email_verified: str = "email_verified"
     claim_name: str = "name"
     claim_plan: str = ""
+    claim_authorization_until: str = "authorization_valid_until"
     default_plan: str = "full-access"
 
     @property
@@ -98,6 +101,8 @@ def get_sso_config() -> SSOConfig:
         claim_email_verified=(os.getenv("APP_SSO_CLAIM_EMAIL_VERIFIED") or "email_verified").strip(),
         claim_name=(os.getenv("APP_SSO_CLAIM_NAME") or "name").strip(),
         claim_plan=(os.getenv("APP_SSO_CLAIM_PLAN") or "").strip(),
+        claim_authorization_until=(
+            os.getenv("APP_SSO_CLAIM_AUTH_UNTIL") or "authorization_valid_until").strip(),
         default_plan=(os.getenv("APP_SSO_DEFAULT_PLAN") or "full-access").strip(),
     )
 
