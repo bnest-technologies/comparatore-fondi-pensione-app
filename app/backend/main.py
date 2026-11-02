@@ -30,15 +30,24 @@ from backend.providers.firebase_auth import initialize_firebase_app
 app = FastAPI(title="Webapp Factory API", version="1.0.0")
 
 import logging
+import sys
 logger = logging.getLogger("uvicorn.error")
 
 # I nostri moduli scrivono con logging.getLogger(__name__), quindi sotto il
-# logger "backend". Senza questa riga il livello ereditato e WARNING e le righe
-# informative (per esempio gli accessi SSO) non arrivano a Cloud Logging.
-# Non tocchiamo il logger radice, per non rendere loquaci anche le librerie.
-logging.getLogger("backend").setLevel(
+# logger "backend". Senza quanto segue le righe informative (per esempio gli
+# accessi SSO) non arrivano a Cloud Logging: il logger radice non ha gestori,
+# e in quel caso Python emette solo da WARNING in su. Servono due cose, il
+# livello e un gestore che scriva su stdout, che e quello che Cloud Run legge.
+# Restiamo sul logger "backend" per non rendere loquaci anche le librerie.
+_log_backend = logging.getLogger("backend")
+_log_backend.setLevel(
     getattr(logging, (os.getenv("APP_LOG_LEVEL") or "INFO").upper(), logging.INFO)
 )
+if not any(getattr(h, "_comparatore", False) for h in _log_backend.handlers):
+    _gestore = logging.StreamHandler(sys.stdout)
+    _gestore.setFormatter(logging.Formatter("%(levelname)s:     %(name)s - %(message)s"))
+    _gestore._comparatore = True  # evita doppioni se il modulo viene ricaricato
+    _log_backend.addHandler(_gestore)
 
 
 @app.on_event("startup")
