@@ -78,21 +78,34 @@ def _istante_da_claim(valore: Any) -> Optional[int]:
     Legge una scadenza dal token e la riporta a epoch.
 
     PrevidenzaPro la manda come data ISO 8601 con fuso orario; accettiamo anche
-    un numero, cosi un cambio di formato da parte loro non ci blocca. Un valore
-    illeggibile viene segnalato e ignorato: non deve impedire l'accesso.
+    un numero, cosi un cambio di formato da parte loro non ci blocca. Il campo
+    puo mancare, e allora non vincola nulla; ma se c'e e non si riesce a
+    leggerlo l'accesso viene rifiutato: con gli abbonamenti veri una scadenza
+    illeggibile non deve valere come "nessuna scadenza".
     """
     if valore is None:
         return None
+
+    def _illeggibile() -> SSOError:
+        logger.warning("Scadenza dell'autorizzazione illeggibile nel token: %r", valore)
+        return SSOError(
+            "Scadenza dell'autorizzazione illeggibile",
+            codice="autorizzazione_non_valida",
+        )
+
     if isinstance(valore, bool):
-        return None
+        raise _illeggibile()
     if isinstance(valore, (int, float)):
-        return int(valore)
+        try:
+            return int(valore)
+        except (ValueError, OverflowError):  # NaN, infinito
+            raise _illeggibile() from None
     if not isinstance(valore, str):
-        return None
+        raise _illeggibile()
 
     testo = valore.strip()
     if not testo:
-        return None
+        raise _illeggibile()
     if testo.isdigit():
         return int(testo)
 
@@ -100,8 +113,7 @@ def _istante_da_claim(valore: Any) -> Optional[int]:
     try:
         istante = datetime.fromisoformat(testo.replace("Z", "+00:00"))
     except ValueError:
-        logger.warning("Scadenza dell'autorizzazione illeggibile nel token: %r", testo)
-        return None
+        raise _illeggibile() from None
     if istante.tzinfo is None:
         istante = istante.replace(tzinfo=timezone.utc)
     return int(istante.timestamp())
@@ -332,7 +344,8 @@ async def verifica_token(token: str, *, fetch_jwks: Optional[Callable] = None) -
         raise SSOError("Token troppo vecchio", codice="token_scaduto")
 
     # Scadenza dell'autorizzazione: se e gia passata non si entra, anche se il
-    # token in se sarebbe ancora valido.
+    # token in se sarebbe ancora valido. Se c'e ma non si legge, _istante_da_claim
+    # rifiuta: meglio negare l'accesso che trattarla come assente.
     autorizzazione_fino_a = _istante_da_claim(claims.get(config.claim_authorization_until))
     if autorizzazione_fino_a is not None and autorizzazione_fino_a <= time.time() - config.leeway_seconds:
         raise SSOError("Autorizzazione scaduta", codice="autorizzazione_scaduta")

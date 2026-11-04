@@ -8,7 +8,8 @@ Fa le tre cose che fara la piattaforma vera:
     token con postMessage
 
 Serve anche a provare cosa succede quando qualcosa va storto: token scaduto,
-emesso per un altro software, firmato da chi non conosciamo, gia usato.
+emesso per un altro software, firmato da chi non conosciamo, gia usato,
+con l'autorizzazione scaduta o con una scadenza illeggibile.
 
 Uso:
 
@@ -44,6 +45,7 @@ import os
 import time
 import uuid
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 import jwt
@@ -51,6 +53,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from jwt.algorithms import RSAAlgorithm
 
 KID = "simulatore-locale-1"
+# distingue "campo assente" da un valore che vogliamo mandare cosi com'e
+_ASSENTE = object()
 DESTINATARIO_PREDEFINITO = "comparatore-fondi-pensione"
 
 _privata = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -73,6 +77,7 @@ def firma(
     durata: int = 60,
     eta: int = 0,
     chiave_estranea: bool = False,
+    autorizzazione: Any = _ASSENTE,
 ) -> str:
     adesso = int(time.time()) - eta
     claims = {
@@ -86,6 +91,8 @@ def firma(
         "email_verified": True,
         "name": nome,
     }
+    if autorizzazione is not _ASSENTE:
+        claims["authorization_valid_until"] = autorizzazione
     chiave = _estranea if chiave_estranea else _privata
     return jwt.encode(claims, chiave, algorithm="RS256", headers={"kid": KID})
 
@@ -131,6 +138,8 @@ PAGINA = """<!doctype html>
   <button class="guasto" onclick="invia('/token?caso=scaduto')">Token scaduto</button>
   <button class="guasto" onclick="invia('/token?caso=altro-software')">Altro software</button>
   <button class="guasto" onclick="invia('/token?caso=firma-estranea')">Firma estranea</button>
+  <button class="guasto" onclick="invia('/token?caso=autorizzazione-scaduta')">Autorizzazione scaduta</button>
+  <button class="guasto" onclick="invia('/token?caso=autorizzazione-illeggibile')">Scadenza illeggibile</button>
   <button class="guasto" onclick="riusa()">Riusa l'ultimo token</button>
   <span class="stato" id="stato">in attesa</span>
 </div>
@@ -248,6 +257,10 @@ class Gestore(BaseHTTPRequestHandler):
                 opzioni = {"destinatario": "pianificatore-previdenziale"}
             elif caso == "firma-estranea":
                 opzioni = {"chiave_estranea": True}
+            elif caso == "autorizzazione-scaduta":
+                opzioni = {"autorizzazione": int(time.time()) - 3600}
+            elif caso == "autorizzazione-illeggibile":
+                opzioni = {"autorizzazione": "quando sara"}
             token = firma(self.emittente, **opzioni)
             self._rispondi(json.dumps({"token": token, "caso": caso}).encode(), "application/json")
             return

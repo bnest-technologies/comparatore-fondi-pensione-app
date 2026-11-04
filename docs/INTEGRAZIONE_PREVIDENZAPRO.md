@@ -54,8 +54,10 @@ rendicontazione degli abbonamenti.
 comparatore non sopravvive all'autorizzazione.** Se la scadenza e piu vicina dei
 30 minuti consueti, la sessione dura fino a quel momento; se e gia passata,
 l'accesso viene rifiutato anche con un token per il resto valido. Si accetta sia
-una data ISO 8601 con fuso orario, sia un epoch. Un valore illeggibile viene
-segnalato nei log e ignorato, senza bloccare l'accesso.
+una data ISO 8601 con fuso orario, sia un epoch. Il campo puo mancare, e allora
+non vincola nulla; ma se c'e e non si riesce a leggerlo l'accesso viene
+rifiutato e il valore finisce nei log: una scadenza illeggibile non deve valere
+come "nessuna scadenza".
 
 ### Cosa viene rifiutato
 
@@ -67,7 +69,7 @@ segnalato nei log e ignorato, senza bloccare l'accesso.
   scarto di orologio);
 - token gia usato, riconosciuto dal `jti`;
 - campi obbligatori mancanti;
-- `authorization_valid_until` gia passato.
+- `authorization_valid_until` gia passato, oppure presente ma illeggibile.
 
 In tutti questi casi la risposta e `401` con un messaggio generico. Il motivo
 preciso resta nei nostri log.

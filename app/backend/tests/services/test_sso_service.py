@@ -256,10 +256,30 @@ async def test_autorizzazione_gia_scaduta_rifiutata(ambiente):
 
 
 @pytest.mark.asyncio
-async def test_scadenza_illeggibile_non_blocca_l_accesso(ambiente):
-    """Un formato che non riconosciamo viene ignorato, non fa fallire l'accesso."""
+@pytest.mark.parametrize("valore", [
+    "quando sara",      # testo che non e una data
+    "",                 # stringa vuota
+    "   ",              # solo spazi
+    True,               # un booleano non e una data
+    {"fino_al": 123},   # oggetto al posto della data
+    ["2027-01-01"],     # lista al posto della data
+])
+async def test_scadenza_illeggibile_rifiutata(ambiente, valore):
+    """
+    Il campo puo mancare, ma se c'e e non si legge non si entra: una scadenza
+    illeggibile non deve valere come "nessuna scadenza".
+    """
     token = _token(ambiente["privata"], ambiente["kid"],
-                   claims_extra={"authorization_valid_until": "quando sara"})
+                   claims_extra={"authorization_valid_until": valore})
+    with pytest.raises(SSOError) as errore:
+        await _verifica(token, ambiente)
+    assert errore.value.codice == "autorizzazione_non_valida"
+
+
+@pytest.mark.asyncio
+async def test_senza_il_campo_si_entra(ambiente):
+    """Il campo resta facoltativo: senza, l'accesso non ha vincoli di scadenza."""
+    token = _token(ambiente["privata"], ambiente["kid"], claims_extra={})
     identita = await _verifica(token, ambiente)
     assert identita.autorizzazione_fino_a is None
 
