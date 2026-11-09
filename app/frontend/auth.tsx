@@ -5,6 +5,7 @@ import {
   attesaPrimaDelRinnovo,
   creaPonte,
   leggiConfigSSO,
+  raccogliTokenAnticipati,
   scambiaToken,
   type Ponte,
 } from './lib/embed';
@@ -150,6 +151,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     let rinnovo: number | undefined;
     let attesaPrimoToken: number | undefined;
 
+    // Ascoltiamo da subito: la configurazione arriva dalla rete e nel frattempo
+    // la pagina che ci ospita potrebbe gia averci mandato il token.
+    const anticipati = raccogliTokenAnticipati();
+
     const applicaToken = async (tokenPiattaforma: string) => {
       try {
         const esito = await scambiaToken(API_BASE, tokenPiattaforma);
@@ -171,7 +176,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       } catch (err) {
         console.error('[Embed] Scambio del token non riuscito:', err);
-        if (attivo) setEmbedError("Accesso non riuscito. Ricarica la pagina da PrevidenzaPro.");
+        if (attivo) {
+          // Puo essere un token raccolto in anticipo e nel frattempo scaduto o
+          // gia usato: ci annunciamo di nuovo e ne chiediamo uno valido.
+          ponte?.annunciaPronto();
+          ponte?.chiediToken();
+          setEmbedError("Accesso non riuscito. Ricarica la pagina da PrevidenzaPro.");
+        }
       } finally {
         if (attivo) setLoading(false);
       }
@@ -202,14 +213,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         });
         ponteRef.current = ponte;
 
+        // Dalla raccolta anticipata al ponte vero, senza buchi.
+        anticipati.chiudi();
+        const giaArrivato = ponte.riprendi(anticipati.messaggi);
+
         // Si annuncia e basta: chiedere subito anche un token farebbe emettere
-        // due accessi per lo stesso ingresso. Se dopo qualche secondo non e
-        // arrivato nulla, la pagina potrebbe aver finito di caricare prima di
-        // noi e non aver sentito l'annuncio: allora lo chiediamo.
-        ponte.annunciaPronto();
-        window.setTimeout(() => {
-          if (attivo && !userRef.current) ponte?.chiediToken();
-        }, 4000);
+        // due accessi per lo stesso ingresso. Se un token era gia arrivato lo
+        // stiamo scambiando, quindi non ne chiediamo un altro. Se dopo qualche
+        // secondo non e arrivato nulla, la pagina potrebbe aver finito di
+        // caricare prima di noi e non aver sentito l'annuncio: allora lo
+        // chiediamo.
+        if (!giaArrivato) {
+          ponte.annunciaPronto();
+          window.setTimeout(() => {
+            if (attivo && !userRef.current) ponte?.chiediToken();
+          }, 4000);
+        }
 
         attesaPrimoToken = window.setTimeout(() => {
           if (!attivo || userRef.current) return;
@@ -229,6 +248,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       attivo = false;
       window.clearTimeout(rinnovo);
       window.clearTimeout(attesaPrimoToken);
+      anticipati.chiudi();
       ponte?.chiudi();
       ponteRef.current = null;
     };
@@ -315,9 +335,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     (async () => {
       if (!authConfigLoaded) return;
 
-      // Incorporati, la sessione la porta l'effetto dedicato: finche non c'e un
-      // token non ha senso chiedere /auth/me, prenderemmo solo un 401.
-      if (MODALITA_INCORPORATA && !sessionToken) return;
+      // Incorporati la sessione la porta l'effetto dedicato, dall'inizio alla
+      // fine. Se intervenissimo anche da qui faremmo una seconda /auth/me in
+      // parallelo alla sua, e al primo intoppo di rete scriveremmo utente
+      // assente: l'utente si ritroverebbe davanti il login pubblico.
+      if (MODALITA_INCORPORATA) return;
 
       // For no-auth local mode, check if we have a stored token.
       if (authMode === 'none') {

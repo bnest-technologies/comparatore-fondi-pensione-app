@@ -285,6 +285,22 @@ async def test_senza_il_campo_si_entra(ambiente):
 
 
 @pytest.mark.asyncio
+async def test_token_da_super_admin_senza_campi_facoltativi(ambiente, monkeypatch):
+    """
+    I token amministrativi di PrevidenzaPro portano access_level=full ma possono
+    non avere ne organization_id ne authorization_valid_until: si entra lo
+    stesso, senza limiti di scadenza oltre a quelli della sessione.
+    """
+    sessione, identita = await _accedi(ambiente, monkeypatch, claims_extra={
+        "access_level": "full",
+    })
+    assert identita.autorizzazione_fino_a is None
+    assert identita.claims.get("organization_id") is None
+    # la sessione dura quanto di consueto, non viene accorciata
+    assert _durata_sessione(sessione) > 10 * 60
+
+
+@pytest.mark.asyncio
 async def test_senza_scadenza_la_sessione_dura_quanto_di_consueto(ambiente, monkeypatch):
     sessione, _ = await _accedi(ambiente, monkeypatch, claims_extra={})
     durata = _durata_sessione(sessione)

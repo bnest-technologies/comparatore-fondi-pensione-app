@@ -453,7 +453,8 @@ async def accedi_con_sso(token: str, *, fetch_jwks: Optional[Callable] = None) -
         plan=profilo.plan or identita.piano,
         extra_claims=extra,
         # la sessione non sopravvive all'autorizzazione: se questa scade prima
-        # dei 30 minuti consueti, la sessione scade con lei
+        # della durata consueta (APP_JWT_ACCESS_TOKEN_EXPIRE_MINUTES, 60 minuti
+        # se non impostata), la sessione scade con lei
         expires_at=identita.autorizzazione_fino_a,
     )
     logger.info(

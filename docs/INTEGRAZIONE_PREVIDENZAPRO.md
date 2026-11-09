@@ -52,7 +52,7 @@ rendicontazione degli abbonamenti.
 
 `authorization_valid_until` invece viene applicato: **la sessione del
 comparatore non sopravvive all'autorizzazione.** Se la scadenza e piu vicina dei
-30 minuti consueti, la sessione dura fino a quel momento; se e gia passata,
+60 minuti consueti, la sessione dura fino a quel momento; se e gia passata,
 l'accesso viene rifiutato anche con un token per il resto valido. Si accetta sia
 una data ISO 8601 con fuso orario, sia un epoch. Il campo puo mancare, e allora
 non vincola nulla; ma se c'e e non si riesce a leggerlo l'accesso viene
@@ -114,7 +114,9 @@ avviso.
 
 ## Comportamento della sessione
 
-- Dura 30 minuti, oppure meno se `authorization_valid_until` e piu vicina. Il
+- Dura 60 minuti, oppure meno se `authorization_valid_until` e piu vicina. La
+  durata viene da `APP_JWT_ACCESS_TOKEN_EXPIRE_MINUTES`, che oggi non e
+  impostata su nessuno dei due ambienti: vale quindi il valore predefinito. Il
   rinnovo parte due minuti prima della scadenza con `token-request`, quindi una
   sessione accorciata si rinnova prima: se nel frattempo l'autorizzazione e
   finita, PrevidenzaPro non emette il token e l'utente esce.

@@ -261,7 +261,10 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     const targetPath = view === 'playbook' ? '/' : sectionToPath(activeSection);
     if (window.location.pathname !== targetPath) {
-      window.history.pushState(null, '', targetPath);
+      // Incorporati teniamo i parametri dell'indirizzo: perdere ?embed=1 vorrebbe
+      // dire ripartire in modalita pubblica al primo ricaricamento dell'iframe.
+      const ricerca = MODALITA_INCORPORATA ? window.location.search : '';
+      window.history.pushState(null, '', targetPath + ricerca);
     }
   }, [view, activeSection]);
 

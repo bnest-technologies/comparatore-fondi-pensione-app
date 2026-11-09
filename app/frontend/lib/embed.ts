@@ -37,21 +37,40 @@ export function dentroIframe(): boolean {
   }
 }
 
+/** Ricorda, per questa scheda, che il comparatore e stato aperto incorporato. */
+const CHIAVE_INCORPORATO = 'comparatore:incorporato';
+
 /**
  * La modalita incorporata si attiva con ?embed=1 al primo caricamento e vale
- * per tutta la sessione: la navigazione interna non deve portarsi dietro il
- * parametro. Richiede comunque di essere davvero dentro un iframe, cosi il
- * parametro da solo non serve a nascondere la testata altrove.
+ * per tutta la sessione. Richiede comunque di essere davvero dentro un iframe,
+ * cosi il parametro da solo non serve a nascondere la testata altrove.
+ *
+ * Il parametro non sopravvive alla navigazione interna, che riscrive
+ * l'indirizzo con il solo percorso: se l'iframe viene ricaricato dopo, senza
+ * memoria ripartiremmo in modalita pubblica e chiederemmo un login Google che
+ * dentro PrevidenzaPro non ha senso. Per questo lo annotiamo in sessionStorage,
+ * che vale per questa scheda e sparisce quando si chiude.
  */
 export const MODALITA_INCORPORATA: boolean = (() => {
   if (typeof window === 'undefined') return false;
+  if (!dentroIframe()) return false;
+
+  let richiesta = false;
   try {
     const parametri = new URLSearchParams(window.location.search);
-    const richiesta = parametri.get('embed') === '1' || parametri.get('embed') === 'true';
-    return richiesta && dentroIframe();
+    richiesta = parametri.get('embed') === '1' || parametri.get('embed') === 'true';
   } catch {
-    return false;
+    richiesta = false;
   }
+
+  try {
+    if (richiesta) window.sessionStorage.setItem(CHIAVE_INCORPORATO, '1');
+    else if (window.sessionStorage.getItem(CHIAVE_INCORPORATO) === '1') richiesta = true;
+  } catch {
+    // archiviazione non disponibile: restiamo a quello che dice l'indirizzo
+  }
+
+  return richiesta;
 })();
 
 /** Origine della pagina che ci ha caricati, quando il browser la dichiara. */
@@ -73,9 +92,43 @@ export interface OpzioniPonte {
   alLogout: () => void;
 }
 
+/** Un token arrivato prima che sapessimo quali origini accettare. */
+export interface MessaggioAnticipato {
+  origine: string;
+  token: string;
+}
+
+/**
+ * Registra subito un ascoltatore che mette da parte i token ricevuti.
+ *
+ * Serve perche le origini ammesse le sappiamo solo dopo aver interrogato il
+ * backend: se la pagina che ci ospita manda il token senza aspettare il nostro
+ * 'ready', in quella finestra andrebbe perso. Qui non validiamo nulla, teniamo
+ * solo da parte origine e token; a dire se sono accettabili ci pensa il ponte.
+ */
+export function raccogliTokenAnticipati(): { messaggi: MessaggioAnticipato[]; chiudi(): void } {
+  const messaggi: MessaggioAnticipato[] = [];
+  if (typeof window === 'undefined') return { messaggi, chiudi: () => {} };
+
+  const ascoltatore = (evento: MessageEvent) => {
+    const dati = evento.data as MessaggioInEntrata | undefined;
+    if (!dati || dati.source !== MITTENTE_PIATTAFORMA) return;
+    if (dati.type === 'token' && typeof dati.token === 'string' && dati.token) {
+      messaggi.push({ origine: evento.origin, token: dati.token });
+    }
+  };
+  window.addEventListener('message', ascoltatore);
+  return { messaggi, chiudi: () => window.removeEventListener('message', ascoltatore) };
+}
+
 export interface Ponte {
   /** Dice alla pagina che siamo pronti a ricevere il primo token */
   annunciaPronto(): void;
+  /**
+   * Riprende i token arrivati prima che il ponte esistesse, scartando quelli
+   * di origini non ammesse. Vero se almeno uno e stato accettato.
+   */
+  riprendi(messaggi: MessaggioAnticipato[]): boolean;
   /** Chiede un token nuovo, per rinnovare la sessione */
   chiediToken(): void;
   /** Aspetta il prossimo token, con scadenza */
@@ -126,6 +179,18 @@ export function creaPonte(opzioni: OpzioniPonte): Ponte {
 
   return {
     annunciaPronto: () => invia({ type: 'ready' }),
+    riprendi: (messaggi) => {
+      let accettato = false;
+      for (const messaggio of messaggi) {
+        if (!ammessa(messaggio.origine)) {
+          console.warn('[Embed] Token ignorato: origine non ammessa', messaggio.origine);
+          continue;
+        }
+        opzioni.alToken(messaggio.token);
+        accettato = true;
+      }
+      return accettato;
+    },
     chiediToken: () => invia({ type: 'token-request' }),
     attendiToken: (timeoutMs = 15000) =>
       new Promise<string>((risolvi, rifiuta) => {
